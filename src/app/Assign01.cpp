@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
 
 	// GLFW setup
 	// Switch to 4.1 if necessary for macOS
-	GLFWwindow* window = setupGLFW("BasicRenderApp", 4, 3, windowWidth, windowHeight, DEBUG_MODE);
+	GLFWwindow* window = setupGLFW("Assign01: ballarmj", 4, 3, windowWidth, windowHeight, DEBUG_MODE);
 
 	// GLEW setup
 	setupGLEW(window);

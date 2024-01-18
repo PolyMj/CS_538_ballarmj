@@ -92,9 +92,9 @@ void A01RenderEngine::drawOneFrame() {
     // Draw our items
     // EXAMPLE: Just draw a red column that moves every frame
     int colWidth = 200;
-    int colInc = 1;
+    int colInc = (currentCol * currentCol / windowWidth / 10) % windowWidth + 1;
     drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
-                255, 0, 0);
+                0, 255, 200);
     currentCol = (currentCol+colInc)%windowWidth;
 
     // Get elapsed time
