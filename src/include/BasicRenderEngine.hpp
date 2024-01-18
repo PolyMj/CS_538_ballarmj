@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include <cmath>
 #include <GL/glew.h>					
 #include <GLFW/glfw3.h>
 using namespace std;
