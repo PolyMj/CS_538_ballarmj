@@ -48,3 +48,9 @@ target_link_libraries(BasicRenderApp ${ALL_LIBRARIES})
 install(TARGETS BasicRenderApp RUNTIME DESTINATION bin/BasicRenderApp)
 install(DIRECTORY shaders/BasicRenderApp DESTINATION bin/BasicRenderApp/shaders)
 
+ 
+# RenderApp
+add_executable(E01RenderApp ${GENERAL_SOURCES} "./src/app/E01RenderApp.cpp")
+target_link_libraries(E01RenderApp ${ALL_LIBRARIES})
+install(TARGETS E01RenderApp RUNTIME DESTINATION bin/E01RenderApp)
+install(DIRECTORY shaders/E01RenderApp DESTINATION bin/E01RenderApp/shaders)
