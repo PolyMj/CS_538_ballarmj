@@ -26,9 +26,17 @@ E01RenderEngine::E01RenderEngine(int windowWidth, int windowHeight) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
     glBindTexture(GL_TEXTURE_2D, 0);
+
+	drawThreadRunning = true;
+	drawThread = new thread(&E01RenderEngine::drawOneFrame, this);
 }
 
 E01RenderEngine::~E01RenderEngine() { 
+	drawThreadRunning = false;
+	drawThread->join();
+	delete drawThread;
+	drawThread = 0;
+
     // Clean up buffer(s)
     delete [] frontBuffer;  
     delete [] screenBuffer;  

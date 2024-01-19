@@ -22,6 +22,9 @@ class E01RenderEngine {
         int nrComponents = 3;
         int totalBufferSize = 0;
 
+		thread *drawThread = 0;
+		bool drawThreadRunning = false;
+
         // BONUS    
         int currentCol = 0;
 
