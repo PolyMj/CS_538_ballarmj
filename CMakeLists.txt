@@ -48,3 +48,8 @@ target_link_libraries(BasicRenderApp ${ALL_LIBRARIES})
 install(TARGETS BasicRenderApp RUNTIME DESTINATION bin/BasicRenderApp)
 install(DIRECTORY shaders/BasicRenderApp DESTINATION bin/BasicRenderApp/shaders)
 
+# Assign01
+add_executable(Assign01 ${GENERAL_SOURCES} "./src/app/Assign01.cpp")
+target_link_libraries(Assign01 ${ALL_LIBRARIES})
+install(TARGETS Assign01 RUNTIME DESTINATION bin/Assign01)
+install(DIRECTORY shaders/Assign01 DESTINATION bin/Assign01/shaders)
