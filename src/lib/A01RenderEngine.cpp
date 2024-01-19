@@ -94,7 +94,11 @@ void A01RenderEngine::drawOneFrame() {
     int colWidth = 200;
     int colInc = (currentCol * currentCol / windowWidth / 10) % windowWidth + 1;
     drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
-                0, 255, 200);
+                0, 160, 255);
+
+	drawAnElipse(drawBuffer, (currentCol * 3) % windowWidth, (windowHeight / 2), 
+				windowWidth / 10, (windowHeight / 4 + currentCol % 50), 255, 80, 0);
+	
     currentCol = (currentCol+colInc)%windowWidth;
 
     // Get elapsed time
@@ -118,6 +122,18 @@ void A01RenderEngine::drawOneFrame() {
     this_thread::sleep_for(chrono::milliseconds((long)round(waitTime*1000)));    
 }
 
+void addToBuffer(unsigned char* buffer, int index,
+			unsigned char r, unsigned char g, unsigned char b) {
+	unsigned char colors[3] = {r, g, b};
+
+	for (int i = 0; i < 3; i++) {
+		if (buffer[index+i] == 0)
+			buffer[index+i] = colors[i];
+		else
+			buffer[index+i] = (buffer[index+i] + colors[i]) / 2;
+	}
+}
+
 void A01RenderEngine::drawAABox(  unsigned char* buffer,
                                     int sx, int sy, 
                                     int ex, int ey,
@@ -125,17 +141,44 @@ void A01RenderEngine::drawAABox(  unsigned char* buffer,
                                     unsigned char g,
                                     unsigned char b) {
 
-    int w = ex - sx + 1;
-    int h = ey - sy + 1;
     int index = nrComponents*(windowWidth*sy + sx);
     int lineWidth = windowWidth*nrComponents;
 
     for(int y = sy; y <= ey && y < windowHeight; y++) {
         int startCol = index;
         for(int x = sx; x <= ex && x < windowWidth; x++) {
-            buffer[index] = r;
-            buffer[index+1] = b;
-            buffer[index+2] = g;
+			addToBuffer(buffer, index, r, g, b);
+            index += nrComponents;
+        }
+        index = startCol + lineWidth;
+    } 
+}
+
+void A01RenderEngine::drawAnElipse(unsigned char* buffer,
+									int cx, int cy, int rx, int ry,
+									unsigned char r, unsigned char g, unsigned char b) {
+	int sx = cx - rx;
+	int sy = cy - ry;
+	if (sx < 0) sx = 0;
+	if (sy < 0) sy = 0;
+	
+	int ex = cx + rx;
+	int ey = cy + ry;
+	if (ex >= windowHeight) ex = windowWidth - 1;
+	if (ey >= windowHeight) ey = windowHeight - 1;
+	
+	int index = nrComponents*(windowWidth*sy + sx);
+    int lineWidth = windowWidth*nrComponents;
+
+    for(int y = sy; y <= ey && y < windowHeight; y++) {
+        int startCol = index;
+        for(int x = sx; x <= ex && x < windowWidth; x++) {
+			int relX = x - cx;
+			int relY = y - cy;
+
+			if ((double)(relX * relX) / (rx * rx) + (double)(relY * relY) / (ry * ry) <= 1) {
+				addToBuffer(buffer, index, r, g, b);
+			}
             index += nrComponents;
         }
         index = startCol + lineWidth;

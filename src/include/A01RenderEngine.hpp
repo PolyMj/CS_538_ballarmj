@@ -37,6 +37,10 @@ class A01RenderEngine {
                         unsigned char r,
                         unsigned char g,
                         unsigned char b);
+		
+		void drawAnElipse(unsigned char* buffer,
+									int x, int y, int rx, int ry,
+									unsigned char r, unsigned char g, unsigned char b);
         
     public:
         A01RenderEngine(int windowWidth, int windowHeight);
