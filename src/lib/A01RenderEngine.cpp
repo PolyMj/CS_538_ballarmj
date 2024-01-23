@@ -89,27 +89,27 @@ void A01RenderEngine::drawOneFrame() {
     // Clear drawing buffer
     clearBuffer(drawBuffer, 0, 0, 0);
 
-    // Draw our items
-    // EXAMPLE: Just draw a red column that moves every frame
+	// Draw rectangle
     int rectWidth = 200;
     int colInc = rectCol / 128 + 2;
     drawAABox(drawBuffer, rectCol, 0, (rectCol+rectWidth), windowHeight-1,
                 0, 160, 255);
-
+	// Draw "overflow" rectangle
 	if (rectCol + rectWidth > windowWidth)
 		drawAABox(drawBuffer, 0, 0, (rectCol+rectWidth) % windowWidth, windowHeight - 1, 0, 160, 255);
 
+	// Draw elipse
 	int rx = windowWidth / 10;
 	int ry = (windowHeight / 6 + elipCol % 72);
 	drawAnElipse(drawBuffer, elipCol + rx, (windowHeight / 2), 
 				rx, ry, 255, 80, 0);
-
+	// Draw "overflow" elipse
 	if (elipCol + 2 * rx > windowWidth)
 		drawAnElipse(drawBuffer, elipCol + rx - windowWidth, windowHeight / 2, rx, ry, 255, 80, 0);
 	
+	// Reset rectCol & elipCol
     rectCol = (rectCol+colInc);
 	if (rectCol >= windowWidth) rectCol = 0;
-
 	elipCol += colInc * 3;
 	if (elipCol >= windowWidth) elipCol = 0;
 
@@ -155,6 +155,9 @@ void A01RenderEngine::drawAABox(  unsigned char* buffer,
 
     int index = nrComponents*(windowWidth*sy + sx);
     int lineWidth = windowWidth*nrComponents;
+
+	if (sx < 0) sx = 0;
+	if (sy < 0) sy = 0;
 
     for(int y = sy; y <= ey && y < windowHeight; y++) {
         int startCol = index;
