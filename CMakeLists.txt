@@ -54,9 +54,15 @@ target_link_libraries(E01RenderApp ${ALL_LIBRARIES})
 install(TARGETS E01RenderApp RUNTIME DESTINATION bin/E01RenderApp)
 install(DIRECTORY shaders/E01RenderApp DESTINATION bin/E01RenderApp/shaders)
 
-
 # Assign01
 add_executable(Assign01 ${GENERAL_SOURCES} "./src/app/Assign01.cpp")
 target_link_libraries(Assign01 ${ALL_LIBRARIES})
 install(TARGETS Assign01 RUNTIME DESTINATION bin/Assign01)
 install(DIRECTORY shaders/Assign01 DESTINATION bin/Assign01/shaders)
+
+# PExercise01
+add_executable(PExercise01 ${GENERAL_SOURCES} "./src/app/PExercise01.cpp")
+target_link_libraries(PExercise01 ${ALL_LIBRARIES})
+install(TARGETS PExercise01 RUNTIME DESTINATION bin/PExercise01)
+install(DIRECTORY shaders/PExercise01 DESTINATION bin/PExercise01/shaders)
+
