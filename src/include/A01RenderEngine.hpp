@@ -23,7 +23,8 @@ class A01RenderEngine {
         int totalBufferSize = 0;
 
         // BONUS    
-        int currentCol = 0;
+        int rectCol = 0;
+		int elipCol = 0;
 
         // Internal drawing functions
         void clearBuffer(   unsigned char *buffer, 

@@ -91,15 +91,27 @@ void A01RenderEngine::drawOneFrame() {
 
     // Draw our items
     // EXAMPLE: Just draw a red column that moves every frame
-    int colWidth = 200;
-    int colInc = (currentCol * currentCol / windowWidth / 10) % windowWidth + 1;
-    drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
+    int rectWidth = 200;
+    int colInc = rectCol / 128 + 2;
+    drawAABox(drawBuffer, rectCol, 0, (rectCol+rectWidth), windowHeight-1,
                 0, 160, 255);
 
-	drawAnElipse(drawBuffer, (currentCol * 3) % windowWidth, (windowHeight / 2), 
-				windowWidth / 10, (windowHeight / 4 + currentCol % 50), 255, 80, 0);
+	if (rectCol + rectWidth > windowWidth)
+		drawAABox(drawBuffer, 0, 0, (rectCol+rectWidth) % windowWidth, windowHeight - 1, 0, 160, 255);
+
+	int rx = windowWidth / 10;
+	int ry = (windowHeight / 6 + elipCol % 72);
+	drawAnElipse(drawBuffer, elipCol + rx, (windowHeight / 2), 
+				rx, ry, 255, 80, 0);
+
+	if (elipCol + 2 * rx > windowWidth)
+		drawAnElipse(drawBuffer, elipCol + rx - windowWidth, windowHeight / 2, rx, ry, 255, 80, 0);
 	
-    currentCol = (currentCol+colInc)%windowWidth;
+    rectCol = (rectCol+colInc);
+	if (rectCol >= windowWidth) rectCol = 0;
+
+	elipCol += colInc * 3;
+	if (elipCol >= windowWidth) elipCol = 0;
 
     // Get elapsed time
     double elapsed = chrono::duration_cast<Second>(Clock::now() - startTime).count();
