@@ -23,7 +23,8 @@ class A01RenderEngine {
         int totalBufferSize = 0;
 
         // BONUS    
-        int currentCol = 0;
+        int rectCol = 0;
+		int elipCol = 0;
 
         // Internal drawing functions
         void clearBuffer(   unsigned char *buffer, 
@@ -37,6 +38,10 @@ class A01RenderEngine {
                         unsigned char r,
                         unsigned char g,
                         unsigned char b);
+		
+		void drawAnElipse(unsigned char* buffer,
+									int x, int y, int rx, int ry,
+									unsigned char r, unsigned char g, unsigned char b);
         
     public:
         A01RenderEngine(int windowWidth, int windowHeight);
