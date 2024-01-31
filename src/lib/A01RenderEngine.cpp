@@ -199,3 +199,4 @@ void A01RenderEngine::drawAnElipse(unsigned char* buffer,
         index = startCol + lineWidth;
     } 
 }
+
