@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -15,5 +14,3 @@ void printShaderCode(string &vertexCode, string &fragCode);
 GLuint createAndCompileShader(const char *shaderCode, GLenum shaderType);
 GLuint createAndLinkShaderProgram(std::vector<GLuint> allShaderIDs);
 GLuint initShaderProgramFromSource(string vertexShaderCode, string fragmentShaderCode);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef MESH_GL_DATA_H
-#define MESH_GL_DATA_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -20,5 +19,3 @@ struct MeshGL {
 void createMeshGL(Mesh &m, MeshGL &mgl);
 void drawMesh(MeshGL &mgl);
 void cleanupMesh(MeshGL &mgl);
-
-#endif

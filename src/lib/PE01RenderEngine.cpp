@@ -10,9 +10,11 @@ PE01RenderEngine::PE01RenderEngine(int windowWidth, int windowHeight) {
     // Create drawing buffer and a "screen" buffer 
     // (as if we were transmitting information to the display device)
     this->totalBufferSize = windowWidth*windowHeight*nrComponents;
-    this->frontBuffer = new unsigned char[totalBufferSize];     
+    this->frontBuffer = new unsigned char[totalBufferSize];
+    this->backBuffer = new unsigned char[totalBufferSize];     
     this->screenBuffer = new unsigned char[totalBufferSize];
-    clearBuffer(this->frontBuffer, 0, 0, 0);    
+    clearBuffer(this->frontBuffer, 0, 0, 0); 
+    clearBuffer(this->backBuffer, 0, 0, 0);   
     clearBuffer(this->screenBuffer, 0, 0, 0);
 
     // Generate window texture
@@ -40,9 +42,11 @@ PE01RenderEngine::~PE01RenderEngine() {
     drawThread = 0;
 
     // Clean up buffer(s)
-    delete [] frontBuffer;  
+    delete [] frontBuffer;
+    delete [] backBuffer;  
     delete [] screenBuffer;  
     frontBuffer = 0;
+    backBuffer = 0;
     screenBuffer = 0;
     
     // Clean up texture    
@@ -59,9 +63,12 @@ void PE01RenderEngine::renderToWindowTexture() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, windowTextureID);
 
-    // Simulate buffer to screen transfer    
-    for(int i = 0; i < totalBufferSize; i++) {        
-        screenBuffer[i] = frontBuffer[i];
+    // Simulate buffer to screen transfer 
+    int iter = 1; //300;   
+    for(int i = 0; i < totalBufferSize; i++) {       
+        for(int j = 0; j < iter; j++) { 
+            screenBuffer[i] = frontBuffer[i];
+        }
     }
         
     // Copy in screen buffer to texture
@@ -95,7 +102,7 @@ void PE01RenderEngine::drawOneFrame() {
         chrono::time_point<Clock> startTime = Clock::now();
 
         // Set drawing buffer
-        unsigned char *drawBuffer = frontBuffer;
+        unsigned char *drawBuffer = backBuffer;
 
         // Clear drawing buffer
         clearBuffer(drawBuffer, 0, 0, 0);
@@ -107,6 +114,9 @@ void PE01RenderEngine::drawOneFrame() {
         drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
                     255, 0, 0);
         currentCol = (currentCol+colInc)%windowWidth;
+
+        // Swap buffers
+        swapBuffers();
 
         // Get elapsed time
         double elapsed = chrono::duration_cast<Second>(Clock::now() - startTime).count();
@@ -128,6 +138,12 @@ void PE01RenderEngine::drawOneFrame() {
         // Wait extra time
         this_thread::sleep_for(chrono::milliseconds((long)round(waitTime*1000)));    
     }
+}
+
+void PE01RenderEngine::swapBuffers() {
+    unsigned char *tmp = backBuffer;
+    backBuffer = frontBuffer;
+    frontBuffer = tmp;
 }
 
 void PE01RenderEngine::drawAABox(  unsigned char* buffer,

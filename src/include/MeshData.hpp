@@ -1,5 +1,4 @@
-#ifndef MESH_DATA_H
-#define MESH_DATA_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -17,5 +16,3 @@ struct Mesh {
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 };
-
-#endif

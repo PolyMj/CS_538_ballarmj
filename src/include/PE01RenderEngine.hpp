@@ -1,5 +1,4 @@
-#ifndef RENDER_ENGINE_H
-#define RENDER_ENGINE_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -16,6 +15,7 @@ class PE01RenderEngine {
         // Data for display buffer
         unsigned int windowTextureID = 0;
         unsigned char *frontBuffer = 0;
+        unsigned char *backBuffer = 0;
         unsigned char *screenBuffer = 0;
         int windowWidth = 0;
         int windowHeight = 0;
@@ -30,6 +30,7 @@ class PE01RenderEngine {
         int currentCol = 0;
 
         // Internal drawing functions
+        void swapBuffers();
         void clearBuffer(   unsigned char *buffer, 
                             unsigned char r,
                             unsigned char g,
@@ -48,5 +49,3 @@ class PE01RenderEngine {
         // Copies display buffer to window texture  
         void renderToWindowTexture();
 };
-
-#endif

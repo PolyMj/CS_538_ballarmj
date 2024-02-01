@@ -97,6 +97,13 @@ void BasicRenderEngine::drawOneFrame() {
                 255, 0, 0);
     currentCol = (currentCol+colInc)%windowWidth;
 
+    potato::Vec3f A(1.0f,2.0f,3.0f);
+    potato::Vec3f B(4.5f, 6.7f, 8.9f);
+    cout << "LENGTH: " << A.length() << endl;
+    potato::Vec3f C = A + B;
+    C[1] = 5280.1f;
+    cout << "C: " << C << endl;
+
     // Get elapsed time
     double elapsed = chrono::duration_cast<Second>(Clock::now() - startTime).count();
 
@@ -134,8 +141,8 @@ void BasicRenderEngine::drawAABox(  unsigned char* buffer,
         int startCol = index;
         for(int x = sx; x <= ex && x < windowWidth; x++) {
             buffer[index] = r;
-            buffer[index+1] = b;
-            buffer[index+2] = g;
+            buffer[index+1] = g;
+            buffer[index+2] = b;
             index += nrComponents;
         }
         index = startCol + lineWidth;

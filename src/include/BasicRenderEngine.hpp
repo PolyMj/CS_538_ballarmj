@@ -1,5 +1,4 @@
-#ifndef RENDER_ENGINE_H
-#define RENDER_ENGINE_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -9,6 +8,7 @@
 #include <cmath>
 #include <GL/glew.h>					
 #include <GLFW/glfw3.h>
+#include "Vector.hpp"
 using namespace std;
 
 class BasicRenderEngine {
@@ -44,5 +44,3 @@ class BasicRenderEngine {
         // Copies display buffer to window texture  
         void renderToWindowTexture();
 };
-
-#endif
