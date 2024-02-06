@@ -77,13 +77,6 @@ target_link_libraries(TestVec3 ${ALL_LIBRARIES})
 set_target_properties(TestVec3 PROPERTIES COMPILE_DEFINITIONS "TEST")
 doctest_discover_tests(TestVec3)
 
-
-# PExercise01
-add_executable(PExercise01 ${GENERAL_SOURCES} "./src/app/PExercise01.cpp")
-target_link_libraries(PExercise01 ${ALL_LIBRARIES})
-install(TARGETS PExercise01 RUNTIME DESTINATION bin/PExercise01)
-install(DIRECTORY shaders/PExercise01 DESTINATION bin/PExercise01/shaders)
-
 # PExercise01
 add_executable(PExercise01 ${GENERAL_SOURCES} "./src/app/PExercise01.cpp")
 target_link_libraries(PExercise01 ${ALL_LIBRARIES})
