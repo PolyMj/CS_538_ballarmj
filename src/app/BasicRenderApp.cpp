@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
 		glfwPollEvents();
 
 		// Sleep for 15 ms
-		this_thread::sleep_for(chrono::milliseconds(15));
+		this_thread::sleep_for(chrono::milliseconds(1));
 	}
 
     // Clean up engine

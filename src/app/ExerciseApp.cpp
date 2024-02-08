@@ -11,7 +11,7 @@
 #include "MeshGLData.hpp"
 #include "GLSetup.hpp"
 #include "Shader.hpp"
-#include "PE01RenderEngine.hpp"
+#include "ExerciseRenderEngine.hpp"
 using namespace std;
 using namespace tinyxml2;
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
 
 	// GLFW setup
 	// Switch to 4.1 if necessary for macOS
-	GLFWwindow* window = setupGLFW("PExercise01", 4, 3, windowWidth, windowHeight, DEBUG_MODE);
+	GLFWwindow* window = setupGLFW("ExerciseApp", 4, 3, windowWidth, windowHeight, DEBUG_MODE);
 
 	// GLEW setup
 	setupGLEW(window);
@@ -194,8 +194,8 @@ int main(int argc, char **argv) {
 	GLuint programID = 0;
 	try {		
 		// Load vertex shader code and fragment shader code
-		string vertexCode = readFileToString("./shaders/PExercise01/Quad.vs");
-		string fragCode = readFileToString("./shaders/PExercise01/Quad.fs");
+		string vertexCode = readFileToString("./shaders/ExerciseApp/Quad.vs");
+		string fragCode = readFileToString("./shaders/ExerciseApp/Quad.fs");
 
 		// Print out shader code, just to check
 		if(DEBUG_MODE) printShaderCode(vertexCode, fragCode);
@@ -223,8 +223,8 @@ int main(int argc, char **argv) {
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
 
-    // Create Basic Render Engine
-    PE01RenderEngine *engine = new PE01RenderEngine(windowWidth, windowHeight);
+    // Create Render Engine
+   	ExerciseRenderEngine *engine = new ExerciseRenderEngine(windowWidth, windowHeight);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Set viewport size
@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
 		glfwPollEvents();
 
 		// Sleep for 15 ms
-		this_thread::sleep_for(chrono::milliseconds(15));
+		this_thread::sleep_for(chrono::milliseconds(1));
 	}
 
     // Clean up engine

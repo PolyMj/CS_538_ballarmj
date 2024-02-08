@@ -7,6 +7,7 @@
 #include <sstream>
 #include "doctest/doctest.h"
 #include "Vector.hpp"
+#include "Settings.hpp"
 using namespace std;
 
 #define EPS_F 1e-5
@@ -28,6 +29,8 @@ inline bool really_close(double a, double b) {
     }
     return true;
 }
+
+#ifdef ENABLE_TESTING
 
 TEST_CASE("VecLength") {
     SUBCASE("float") { CHECK(typeid(float) == typeid(potato::VecLength<float>::type));}  
@@ -509,4 +512,6 @@ TEST_CASE("Vec3: Alternate Names") {
     CHECK(typeid(potato::Vec3<unsigned char>) == typeid(u));
     CHECK(typeid(potato::Vec3<double>) == typeid(d));
 }
+
+#endif
 

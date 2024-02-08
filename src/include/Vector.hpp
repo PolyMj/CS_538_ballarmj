@@ -43,11 +43,7 @@ namespace potato {
             return os;
         };
 
-        T& operator[](int i) {
-            if(i < 0 || i >= 3) 
-                throw std::out_of_range(
-                    "ERROR: " + to_string(i) 
-                    + " out of bounds!");
+        T& operator[](int i) { 
             switch(i) {
                 case 0:
                     return x;
@@ -55,14 +51,16 @@ namespace potato {
                     return y;
                 case 2:
                     return z;
-            };
+                default:
+                    throw std::out_of_range(
+                        "ERROR: " + to_string(i) 
+                        + " out of bounds!");
+            }
         };
-
-
     };
 
     using Vec3f = Vec3<float>;
     using Vec3i = Vec3<int>;
     using Vec3d = Vec3<double>;
-	using Vec3u = Vec3<unsigned char>;
+    using Vec3u = Vec3<unsigned char>;
 };

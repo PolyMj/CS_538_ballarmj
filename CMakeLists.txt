@@ -13,6 +13,10 @@ set(CMAKE_PREFIX_PATH ${MASTER_DEPEND} ${CMAKE_PREFIX_PATH})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(UNIX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 #####################################
 # Find necessary libraries
 #####################################
@@ -51,6 +55,12 @@ add_executable(BasicRenderApp ${GENERAL_SOURCES} "./src/app/BasicRenderApp.cpp")
 target_link_libraries(BasicRenderApp ${ALL_LIBRARIES})
 install(TARGETS BasicRenderApp RUNTIME DESTINATION bin/BasicRenderApp)
 install(DIRECTORY shaders/BasicRenderApp DESTINATION bin/BasicRenderApp/shaders)
+
+# ExerciseApp
+add_executable(ExerciseApp ${GENERAL_SOURCES} "./src/app/ExerciseApp.cpp")
+target_link_libraries(ExerciseApp ${ALL_LIBRARIES})
+install(TARGETS ExerciseApp RUNTIME DESTINATION bin/ExerciseApp)
+install(DIRECTORY shaders/ExerciseApp DESTINATION bin/ExerciseApp/shaders)
 
 # Assign01
 # Uncomment these lines
