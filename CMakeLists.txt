@@ -64,10 +64,17 @@ install(DIRECTORY shaders/ExerciseApp DESTINATION bin/ExerciseApp/shaders)
 
 # Assign01
 # Uncomment these lines
-#add_executable(Assign01 ${GENERAL_SOURCES} "./src/app/Assign01.cpp")
-#target_link_libraries(Assign01 ${ALL_LIBRARIES})
-#install(TARGETS Assign01 RUNTIME DESTINATION bin/Assign01)
-#install(DIRECTORY shaders/Assign01 DESTINATION bin/Assign01/shaders)
+add_executable(Assign01 ${GENERAL_SOURCES} "./src/app/Assign01.cpp")
+target_link_libraries(Assign01 ${ALL_LIBRARIES})
+install(TARGETS Assign01 RUNTIME DESTINATION bin/Assign01)
+install(DIRECTORY shaders/Assign01 DESTINATION bin/Assign01/shaders)
+
+# RenderApp
+add_executable(E01RenderApp ${GENERAL_SOURCES} "./src/app/E01RenderApp.cpp")
+target_link_libraries(E01RenderApp ${ALL_LIBRARIES})
+install(TARGETS E01RenderApp RUNTIME DESTINATION bin/E01RenderApp)
+install(DIRECTORY shaders/E01RenderApp DESTINATION bin/E01RenderApp/shaders)
+
 
 # PotatoRenderApp
 # Uncomment these lines
