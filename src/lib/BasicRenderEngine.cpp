@@ -17,7 +17,7 @@ BasicRenderEngine::BasicRenderEngine(int windowWidth, int windowHeight) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     
     glBindTexture(GL_TEXTURE_2D, windowTextureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, screenBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowWidth, windowHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, screenBuffer->data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
