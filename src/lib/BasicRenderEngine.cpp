@@ -10,10 +10,11 @@ BasicRenderEngine::BasicRenderEngine(int windowWidth, int windowHeight) {
     // Create drawing buffer and a "screen" buffer 
     // (as if we were transmitting information to the display device)
     this->totalBufferSize = windowWidth*windowHeight*nrComponents;
-    this->frontBuffer = new unsigned char[totalBufferSize];     
-    this->screenBuffer = new unsigned char[totalBufferSize];
-    clearBuffer(this->frontBuffer, 0, 0, 0);    
-    clearBuffer(this->screenBuffer, 0, 0, 0);
+    this->frontBuffer = new Image<Vec3u>(windowWidth, windowHeight);     
+    this->screenBuffer = new Image<Vec3u>(windowWidth, windowHeight);
+	Vec3u clearVal = Vec3u(0,0,0);
+	this->frontBuffer->clear(clearVal);
+	this->screenBuffer->clear(clearVal);
 
     // Generate window texture
     glGenTextures(1, &windowTextureID);    
@@ -30,8 +31,8 @@ BasicRenderEngine::BasicRenderEngine(int windowWidth, int windowHeight) {
 
 BasicRenderEngine::~BasicRenderEngine() { 
     // Clean up buffer(s)
-    delete [] frontBuffer;  
-    delete [] screenBuffer;  
+    delete frontBuffer;  
+    delete screenBuffer;  
     frontBuffer = 0;
     screenBuffer = 0;
     
@@ -50,23 +51,19 @@ void BasicRenderEngine::renderToWindowTexture() {
     glBindTexture(GL_TEXTURE_2D, windowTextureID);
 
     // Simulate buffer to screen transfer    
-    for(int i = 0; i < totalBufferSize; i++) {        
-        screenBuffer[i] = frontBuffer[i];
-    }
+    screenBuffer->copyFrom(frontBuffer);
         
     // Copy in screen buffer to texture
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, windowWidth, windowHeight, 
                     GL_RGB, GL_UNSIGNED_BYTE, screenBuffer); 	
 }
 
-void BasicRenderEngine::clearBuffer(unsigned char *buffer, 
-                                    unsigned char r,
-                                    unsigned char g,
-                                    unsigned char b) {
+void BasicRenderEngine::clearBuffer(Image<Vec3u> *buffer, 
+                                    Vec3u color) {
     for(int i = 0; i < totalBufferSize; i += nrComponents) {
-        buffer[i] = r;
-        buffer[i+1] = g;
-        buffer[i+2] = b;        
+        buffer[i] = color.r;
+        buffer[i+1] = color.g;
+        buffer[i+2] = color.b;
     }
 }
 
@@ -84,7 +81,7 @@ void BasicRenderEngine::drawOneFrame() {
     chrono::time_point<Clock> startTime = Clock::now();
 
     // Set drawing buffer
-    unsigned char *drawBuffer = frontBuffer;
+    Image<Vec3u> drawBuffer = frontBuffer;
 
     // Clear drawing buffer
     clearBuffer(drawBuffer, 0, 0, 0);
