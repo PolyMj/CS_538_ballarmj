@@ -22,6 +22,10 @@ ExerciseRenderEngine::ExerciseRenderEngine(int windowWidth, int windowHeight) {
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	XMLDocument doc;
+	doc.LoadFile("./startfleet.html");
+	parseAllSVGLines(doc, allLines);
     
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -69,6 +73,7 @@ void ExerciseRenderEngine::renderToWindowTexture() {
                     GL_RGB, GL_UNSIGNED_BYTE, screenBuffer->data()); 	
 }
 
+// The same as BasicRenderEngine::drawOneFrame()? Not sure why it's named differently
 void ExerciseRenderEngine::drawingLoop() {   
     
     while(drawThreadRunning) {
@@ -88,6 +93,10 @@ void ExerciseRenderEngine::drawingLoop() {
         drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
                 Vec3u(255, 0, 0));
         currentCol = (currentCol+colInc)%windowWidth;
+
+		for(int i = 0; i < allLines.size(); i++) {
+			drawLineDDA(drawBuffer, allLines.at(i));
+		}
 
         // Swap buffers
         swapBuffers();
