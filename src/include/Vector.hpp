@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <cstring>
 #include <cmath>
@@ -26,9 +25,9 @@ namespace potato {
 
 		template<typename U>
 		Vec3(const Vec3<U> &other) {
-			this->x = static_cast<U>(other->x);
-			this->y = static_cast<U>(other->y);
-			this->z = static_cast<U>(other->z);
+			x = static_cast<U>(other.x);
+			y = static_cast<U>(other.y);
+			z = static_cast<U>(other.z);
 		};
 
         template<typename U>
@@ -113,19 +112,15 @@ namespace potato {
 
 		template<typename U>
 		auto dot(const Vec3<U> &v2) const -> decltype(T{} * U{}) {
-			return {
-				x * v2->x,
-				y * v2->y,
-				z * v2->z
-			};
+			return x*v2.x + y*v2.y + z*v2.z;
 		};
 
 		template<typename U>
-		auto cross(const Vec3<U> &v2) const -> decltype(T{} * U{}) {
+		auto cross(const Vec3<U> &v2) const -> Vec3<decltype(T{} * U{})> {
 			return {
-				(y * v2->z) - (z * v2->y),
-				(z * v2->x) - (x * v2->z),
-				(x * v2->y) - (y * v2->x)
+				(y * v2.z) - (z * v2.y),
+				(z * v2.x) - (x * v2.z),
+				(x * v2.y) - (y * v2.x)
 			};
 		};
 
@@ -136,7 +131,7 @@ namespace potato {
         };
 
 		auto normalize() const -> Vec3<typename VecLength<T>::type> {
-			auto l = this->VecLength();
+			typename VecLength<T>::type l = length();
 			return {
 				x / l,
 				y / l,
