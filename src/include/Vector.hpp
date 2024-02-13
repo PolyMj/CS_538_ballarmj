@@ -20,9 +20,11 @@ namespace potato {
         union { T y{}, g, t; };
         union { T z{}, b, p; };
 
+		// Simple constructors
         Vec3() = default;
         Vec3(T x, T y, T z) : x(x), y(y), z(z) {};
 
+		// Copy constructor
 		template<typename U>
 		Vec3(const Vec3<U> &other) {
 			x = static_cast<U>(other.x);
@@ -30,6 +32,7 @@ namespace potato {
 			z = static_cast<U>(other.z);
 		};
 
+			// Start rithmetic overloads //
         template<typename U>
         auto operator+(const Vec3<U> &v2) const -> Vec3<decltype(T{}+U{})> {
             return {
@@ -74,7 +77,9 @@ namespace potato {
                 z / s
             };
         };
+			// End arithmetic overloads
 
+			// Start array-esk overloads //
 		T operator[](int i) const {
             switch(i) {
                 case 0:
@@ -89,7 +94,6 @@ namespace potato {
                         + " out of bounds!");
             }
 		}
-
         T& operator[](int i) { 
             switch(i) {
                 case 0:
@@ -104,12 +108,15 @@ namespace potato {
                         + " out of bounds!");
             }
         };
+			// End array-esk overloads //
 
+		// For "printing" to streams
         friend ostream& operator<<(ostream& os, Vec3<T> v) {
             os << "(" << v.x << "," << v.y << "," << v.z << ")";
             return os;
         };
 
+			// Start vector-specific operations //
 		template<typename U>
 		auto dot(const Vec3<U> &v2) const -> decltype(T{} * U{}) {
 			return x*v2.x + y*v2.y + z*v2.z;
@@ -138,8 +145,10 @@ namespace potato {
 				z / l
 			};
 		};
+			// End vector-specific operations //
 	};
 
+	// Ease-of-use type definitions
     using Vec3f = Vec3<float>;
     using Vec3i = Vec3<int>;
     using Vec3d = Vec3<double>;
