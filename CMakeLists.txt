@@ -87,6 +87,8 @@ install(DIRECTORY shaders/PotatoRenderApp DESTINATION bin/PotatoRenderApp/shader
 # TEST TARGETS
 #####################################
 
+# COMMENT THIS LINE TO DISABLE TESTING
+add_definitions(-DENABLE_TESTING)
 enable_testing()
 
 add_executable(TestVec3 ${GENERAL_SOURCES} "./src/tests/TestVec3.cpp")
