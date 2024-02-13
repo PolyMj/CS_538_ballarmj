@@ -78,15 +78,17 @@ install(DIRECTORY shaders/E01RenderApp DESTINATION bin/E01RenderApp/shaders)
 
 # PotatoRenderApp
 # Uncomment these lines
-#add_executable(PotatoRenderApp ${GENERAL_SOURCES} "./src/app/PotatoRenderApp.cpp")
-#target_link_libraries(PotatoRenderApp ${ALL_LIBRARIES})
-#install(TARGETS PotatoRenderApp RUNTIME DESTINATION bin/PotatoRenderApp)
-#install(DIRECTORY shaders/PotatoRenderApp DESTINATION bin/PotatoRenderApp/shaders)
+add_executable(PotatoRenderApp ${GENERAL_SOURCES} "./src/app/PotatoRenderApp.cpp")
+target_link_libraries(PotatoRenderApp ${ALL_LIBRARIES})
+install(TARGETS PotatoRenderApp RUNTIME DESTINATION bin/PotatoRenderApp)
+install(DIRECTORY shaders/PotatoRenderApp DESTINATION bin/PotatoRenderApp/shaders)
 
 #####################################
 # TEST TARGETS
 #####################################
 
+# COMMENT THIS LINE TO DISABLE TESTING
+add_definitions(-DENABLE_TESTING)
 enable_testing()
 
 add_executable(TestVec3 ${GENERAL_SOURCES} "./src/tests/TestVec3.cpp")
