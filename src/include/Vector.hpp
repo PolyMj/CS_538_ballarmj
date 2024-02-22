@@ -14,6 +14,159 @@ namespace potato {
         using type = double;
     };
 
+	template<typename T>
+	struct Vec3;
+
+	/////// VEC4 ///////
+
+	template<typename T>
+	struct Vec4 {
+        union { T x{}, r, s; };
+        union { T y{}, g, t; };
+        union { T z{}, b, p; };
+        union { T w{}, a, q; };
+
+		Vec4() = default;
+		Vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {};
+
+		template<typename U>
+		Vec4(const Vec3<U> &other) {
+			x = static_cast<U>(other.x);
+			y = static_cast<U>(other.y);
+			z = static_cast<U>(other.z);
+			w = static_cast<U>(other.w);
+		}
+
+		template<typename U>
+		Vec4(const Vec3<U> &other, U w) {
+			x = static_cast<U>(other.x);
+			y = static_cast<U>(other.y);
+			z = static_cast<U>(other.z);
+			this->w = static_cast<T>(w);
+		}
+
+			// Start rithmetic overloads //
+        template<typename U>
+        auto operator+(const Vec4<U> &v2) const -> Vec4<decltype(T{}+U{})> {
+            return {
+                x + v2.x,
+                y + v2.y,
+                z + v2.z
+            };
+        };
+
+		template<typename U>
+        auto operator-(const Vec4<U> &v2) const -> Vec4<decltype(T{}-U{})> {
+            return {
+                x - v2.x,
+                y - v2.y,
+                z - v2.z
+            };
+        };
+
+		template<typename U>
+        auto operator*(const Vec4<U> &v2) const -> Vec4<decltype(T{}*U{})> {
+            return {
+                x * v2.x,
+                y * v2.y,
+                z * v2.z
+            };
+        };
+
+		template<typename U>
+        auto operator*(const U &s) const -> Vec4<decltype(T{}*U{})> {
+            return {
+                x * s,
+                y * s,
+                z * s
+            };
+        };
+
+		template<typename U>
+        auto operator/(const U &s) const -> Vec4<decltype(T{}*U{})> {
+            return {
+                x / s,
+                y / s,
+                z / s
+            };
+        };
+			// End arithmetic overloads
+
+			// Start array-esk overloads //
+		T operator[](int i) const {
+            switch(i) {
+                case 0:
+                    return x;
+                case 1:
+                    return y;
+                case 2:
+                    return z;
+				case 3:
+					return w;
+                default:
+                    throw std::out_of_range(
+                        "ERROR: " + to_string(i) 
+                        + " out of bounds!");
+            }
+		}
+        T& operator[](int i) { 
+            switch(i) {
+                case 0:
+                    return x;
+                case 1:
+                    return y;
+                case 2:
+                    return z;
+				case 3:
+					return w;
+                default:
+                    throw std::out_of_range(
+                        "ERROR: " + to_string(i) 
+                        + " out of bounds!");
+            }
+        };
+			// End array-esk overloads //
+
+		// For "printing" to streams
+        friend ostream& operator<<(ostream& os, Vec4<T> v) {
+            os << "(" << v.x << "," << v.y << "," << v.z << "," << v.w << ")";
+            return os;
+        };
+
+			// Start vector-specific operations //
+		template<typename U>
+		auto dot(const Vec4<U> &v2) const -> decltype(T{} * U{}) {
+			return x*v2.x + y*v2.y + z*v2.z;
+		};
+
+		template<typename U>
+		auto cross(const Vec4<U> &v2) const -> Vec4<decltype(T{} * U{})> {
+			return {
+				(y * v2.z) - (z * v2.y),
+				(z * v2.x) - (x * v2.z),
+				(x * v2.y) - (y * v2.x)
+			};
+		};
+
+        auto length() const -> typename VecLength<T>::type {
+            return sqrt(static_cast<typename VecLength<T>::type>(
+                x*x + y*y + z*z
+            ));
+        };
+
+		auto normalize() const -> Vec4<typename VecLength<T>::type> {
+			typename VecLength<T>::type l = length();
+			return {
+				x / l,
+				y / l,
+				z / l
+			};
+		};
+			// End vector-specific operations //
+	};
+
+	/////// VEC3 ///////
+
     template<typename T>
     struct Vec3 {
         union { T x{}, r, s; };
@@ -31,6 +184,13 @@ namespace potato {
 			y = static_cast<U>(other.y);
 			z = static_cast<U>(other.z);
 		};
+
+		template<typename U>
+		Vec3(const Vec4<U> &other) {
+			x = static_cast<U>(other.x);
+			y = static_cast<U>(other.y);
+			z = static_cast<U>(other.z);
+		}
 
 			// Start rithmetic overloads //
         template<typename U>
@@ -153,4 +313,9 @@ namespace potato {
     using Vec3i = Vec3<int>;
     using Vec3d = Vec3<double>;
     using Vec3u = Vec3<unsigned char>;
+	
+    using Vec4f = Vec4<float>;
+    using Vec4i = Vec4<int>;
+    using Vec4d = Vec4<double>;
+    using Vec4u = Vec4<unsigned char>;
 };

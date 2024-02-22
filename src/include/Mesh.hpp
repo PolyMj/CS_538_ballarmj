@@ -8,20 +8,18 @@
 using namespace std;
 
 namespace potato {
-	template<typename T, typename C>
+	
 	struct Vert {
-		Vec3<T> pos;
-		Vec3<C> color;
+		Vec3f pos;
+		Vec4f color;
 	};
 
-	template<typename T, typename C>
 	struct Polygon {
 		vector<Vert> vertices;
 	};
 
-	template<typename T, typename C>
 	struct TriangleMesh {
-		vector<Vert<T,C>> vertices;
+		vector<Vert> vertices;
 		vector<unsigned int> indices;
 	};
 
@@ -50,8 +48,8 @@ namespace potato {
 		return c;
 	}
 
-	template<typename T, typename C>
-	BoundBox<T> computeBounds(Polygon<T,C> poly) {
+	template<typename T>
+	BoundBox<T> computeBounds(Polygon poly) {
 		BoundBox<T> box;
 
 		if (poly.vertices.size() > 1) {
@@ -84,25 +82,41 @@ namespace potato {
 	}
 
 	template<typename T, typename S>
-	Vec3<float> barycentric(Vec3<T> &A, Vec3<T> &B, Vec3<T> &C, float x, float y) {
+	Vec3<float> barycentric(Vec3<T> &A, Vec3<T> &B, Vec3<T> &C, float x, float y) {		
 		Vec3<float> barry; // Bro thinks he's the flash
+		ImplicitLine<float> AB(A,B);
+		ImplicitLine<float> AC(A,C);
 
-		// Calculate Gamma (B-A)
-		Line<T,S> lineAB;
-		lineAB.start = A;
-		lineAB.end = B;
-		barry.z = implicit(lineAB, x, y) / implicit(lineAB, C.x, C.y);
+		return barycentric(AB, AC, x, y); // Bye barry
+	}
 
-		// Calculate Beta (C-A)
-		Line<T,S> lineAC;
-		lineAC.start = A;
-		lineAC.end = C;
-		barry.y = implicit(lineAC, x, y) / implicit(lineAB, B.x, B.y);
-
-		// Find remainder (Alpha)
-		barry.x = 1 - barry.y - barry.z;
+	template<typename T, typename S>
+	Vec3<float> barycentric(ImplicitLine<float> &AB, ImplicitLine<float> AC, float x, float y) {		
+		Vec3<float> barry; // Bro thinks he's the flash
+		
+		barry.z = AB.eval(x, y) / AB.eval(C.x, C.y);
+		barry.y = AB.eval(x, y) / AB.eval(B.x, B.y);
+		barry.x = 1.0 - barry.y - barry.z;
 
 		return barry; // Bye barry
+	}
+
+	template<typename T>
+	void calculateTriangleBarycentric(Vec3<T> A, Vec3<T> B, Vec3<T> C, vector<Vec3f> &allBarry) {
+		BoundBox<T> bb = computeBounds(A,B,C);
+		int sy = floor(bb.start.y);
+		int ey = ciel(bb.end.y);
+		int sx = floor(bb.start.x);
+		int ex = ciel(bb.end.x);
+
+		for (int y = sy, y <= ey; y++) {
+			for (int x = sx; x <= ex; x++) {
+				Vec3<float> barry = barycentric(A,B,C,float(x),float(y));
+				if (barry.z > 0 && bary.y > 0 && bary.x > 0) {
+					allBarry.push_back(barry);
+				}
+			}
+		}
 	}
 
 	template<typename T, typename S>
