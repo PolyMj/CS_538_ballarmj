@@ -7,8 +7,8 @@ ExerciseRenderEngine::ExerciseRenderEngine(int windowWidth, int windowHeight) {
     
     // Create drawing buffer and a "screen" buffer 
     // (as if we were transmitting information to the display device)    
-    this->frontBuffer = new Image<Vec3u>(windowWidth, windowHeight);  
-    this->backBuffer = new Image<Vec3u>(windowWidth, windowHeight);  
+    this->frontBuffer = new Image<Vec3f>(windowWidth, windowHeight);  
+    this->backBuffer = new Image<Vec3f>(windowWidth, windowHeight);  
     this->screenBuffer = new Image<Vec3u>(windowWidth, windowHeight);
     this->frontBuffer->clear(Vec3u(0,0,0));
     this->screenBuffer->clear(Vec3u(0,0,0));
@@ -65,7 +65,7 @@ void ExerciseRenderEngine::renderToWindowTexture() {
 
     // Simulate buffer to screen transfer     
     if(USE_VSYNC) frontBufferMutex.lock();
-    screenBuffer->copyFrom(frontBuffer);
+    screenBuffer->copyFrom(frontBuffer, 255.0f, 0.0f);
     if(USE_VSYNC) frontBufferMutex.unlock();
         
     // Copy in screen buffer to texture

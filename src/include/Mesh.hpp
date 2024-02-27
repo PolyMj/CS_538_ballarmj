@@ -82,20 +82,23 @@ namespace potato {
 	}
 
 	template<typename T, typename S>
-	Vec3<float> barycentric(Vec3<T> &A, Vec3<T> &B, Vec3<T> &C, float x, float y) {		
+	Vec3<float> barycentric(Vec3<float> &A, Vec3<float> &B, Vec3<float> &C, float x, float y) {		
 		Vec3<float> barry; // Bro thinks he's the flash
 		ImplicitLine<float> AB(A,B);
 		ImplicitLine<float> AC(A,C);
+
+		float Cval = AB.eval(C.x, C.y);
+		float Bval = AC.eval(B.x, B.y);
 
 		return barycentric(AB, AC, x, y); // Bye barry
 	}
 
 	template<typename T, typename S>
-	Vec3<float> barycentric(ImplicitLine<float> &AB, ImplicitLine<float> AC, float x, float y) {		
+	Vec3<float> barycentric(ImplicitLine<float> &AB, ImplicitLine<float> AC, float Cval, float Bval, float x, float y) {		
 		Vec3<float> barry; // Bro thinks he's the flash
 		
-		barry.z = AB.eval(x, y) / AB.eval(C.x, C.y);
-		barry.y = AB.eval(x, y) / AB.eval(B.x, B.y);
+		barry.z = AB.eval(x, y) / Bval;
+		barry.y = AC.eval(x, y) / Cval;
 		barry.x = 1.0 - barry.y - barry.z;
 
 		return barry; // Bye barry
@@ -119,7 +122,7 @@ namespace potato {
 		}
 	}
 
-	template<typename T, typename S>
+	/*template<typename T, typename S>
 	void fillTraingle(Image<Vec3<S>> *image, Vec3<T> &A, Vec3<T> &B, Vec3<T> &C) {
 		BoundBox<T> bb = computeBounds(A,B,C);
 		for(auto y = bb.start.y; y <= bb; y+=1) {
@@ -135,6 +138,6 @@ namespace potato {
 				}
 			}
 		}
-	}
+	}*/
 
 }

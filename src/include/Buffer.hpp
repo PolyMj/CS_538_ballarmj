@@ -55,6 +55,21 @@ namespace potato {
                     buffer[i] = other->buffer[i];
                 }
             };
+
+			template<typename U, typename S>
+            void copyFrom(const Buffer<U> *other, S alpha = 1, S beta = 0) {
+                if(cnt != other->cnt) 
+                    throw std::out_of_range("ERROR: Unequal sizes! " 
+                                            + to_string(cnt) + " vs. " 
+                                            + to_string(other->cnt));
+            
+                for(int i = 0; i < cnt; i++) {
+					U val = other->buffer[i];
+					val *= alpha;
+					val += beta;
+                    buffer[i] = static_cast<T>(val);
+                }
+            };
     };
 
     template<typename T>

@@ -24,8 +24,8 @@ class ExerciseRenderEngine {
     private:
         // Data for display buffer
         unsigned int windowTextureID = 0;        
-        Image<Vec3u> *frontBuffer = 0;
-        Image<Vec3u> *backBuffer = 0;
+        Image<Vec3f> *frontBuffer = 0;
+        Image<Vec3f> *backBuffer = 0;
         Image<Vec3u> *screenBuffer = 0;
 
         int windowWidth = 0;
@@ -37,7 +37,7 @@ class ExerciseRenderEngine {
         mutex frontBufferMutex;
         bool USE_VSYNC = true;
 
-		vector<Line<int, unsigned char>> allLines;
+		vector<Line<int, float>> allLines;
 
         // Timing stuff
         Timekeeper timekeeper;
@@ -47,10 +47,10 @@ class ExerciseRenderEngine {
 
         // Internal drawing functions        
         void drawingLoop();    
-        void drawAABox( Image<Vec3u> *buffer,
+        void drawAABox( Image<Vec3f> *buffer,
                         int sx, int sy, 
                         int ex, int ey,
-                        Vec3u color);        
+                        Vec3f color);        
         void swapBuffers();
         
     public:
