@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cstring>
 #include "Vector.hpp"
 using namespace std;
 
@@ -31,19 +33,25 @@ namespace potato {
                 return sizeof(T);
             };
 
-            void set(int index, T val) {
+            void set(int index, const T val) {
                 buffer[index] = val;
             };
 
-            T& get(int index) const {
+            T get(int index) const {
                 return buffer[index];
             };       
 
-            void clear(T clearVal) {
-                for(int i = 0; i < cnt; i++) {
-                    buffer[i] = clearVal;
+            void clear(const T clearVal) {                
+                T *current = buffer;                
+                for(int i = 0; i < cnt; i++) {                    
+                    (*current) = clearVal;
+                    current++;
                 }
-            };   
+            };  
+
+            void clear() {
+                memset(buffer, 0, cnt*sizeof(T));
+            }; 
 
             void copyFrom(const Buffer<T> *other) {
                 if(cnt != other->cnt) 
@@ -56,18 +64,18 @@ namespace potato {
                 }
             };
 
-			template<typename U, typename S>
-            void copyFrom(const Buffer<U> *other, S alpha = 1, S beta = 0) {
-                if(cnt != other->cnt) 
+            template<typename U, typename S>
+            void copyFrom(const Buffer<U> *other, S alpha, S beta) {
+                if(cnt != other->size()) 
                     throw std::out_of_range("ERROR: Unequal sizes! " 
                                             + to_string(cnt) + " vs. " 
-                                            + to_string(other->cnt));
+                                            + to_string(other->size()));
             
                 for(int i = 0; i < cnt; i++) {
-					U val = other->buffer[i];
-					val *= alpha;
-					val += beta;
-                    buffer[i] = static_cast<T>(val);
+                    auto val = other->get(i);
+                    val = val*alpha;
+                    val = val + beta;                    
+                    buffer[i] = T(val);
                 }
             };
     };
@@ -77,11 +85,7 @@ namespace potato {
         protected:
             int width {};
             int height {};
-        public:
-            using Buffer<T>::set;
-            using Buffer<T>::get;
-            using Buffer<T>::clear;
-
+        public:            
             Image(int width, int height) : Buffer<T>::Buffer(width*height), width(width), height(height) {};
             virtual ~Image() {
                 width = 0;
@@ -95,12 +99,12 @@ namespace potato {
                 return (x + y*width);
             };
 
-            void setPixel(int x, int y, T val) {
-                set(getIndex(x,y), val);                
+            void setPixel(int x, int y, const T &val) {
+                Buffer<T>::set(getIndex(x,y), val);                
             };
 
             T& getPixel(int x, int y) const {
-                return get(getIndex(x,y));
+                return Buffer<T>::get(getIndex(x,y));
             };
     };
 };

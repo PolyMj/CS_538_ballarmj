@@ -77,7 +77,6 @@ install(DIRECTORY shaders/E01RenderApp DESTINATION bin/E01RenderApp/shaders)
 
 
 # PotatoRenderApp
-# Uncomment these lines
 add_executable(PotatoRenderApp ${GENERAL_SOURCES} "./src/app/PotatoRenderApp.cpp")
 target_link_libraries(PotatoRenderApp ${ALL_LIBRARIES})
 install(TARGETS PotatoRenderApp RUNTIME DESTINATION bin/PotatoRenderApp)

@@ -12,6 +12,8 @@
 #include "GLSetup.hpp"
 #include "Shader.hpp"
 #include "PotatoRenderEngine.hpp"
+#include "PotatoForwardEngine.hpp"
+#include "PotatoExampleEngine.hpp"
 using namespace std;
 using namespace tinyxml2;
 
@@ -223,8 +225,22 @@ int main(int argc, char **argv) {
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
 
-    // Create Basic Render Engine
-    PotatoRenderEngine *engine = new PotatoRenderEngine(windowWidth, windowHeight);
+    // Create Potato Render Engine
+	PotatoRenderEngine *engine; 
+	if(RENDERER_CHOICE == BASE_RENDERER) {
+		engine = new PotatoRenderEngine(windowWidth, windowHeight);
+	}
+	else if(RENDERER_CHOICE == EXAMPLE_RENDERER) {
+		engine = new PotatoExampleEngine(windowWidth, windowHeight);
+	}
+	else if(RENDERER_CHOICE == FORWARD_RENDERER) {
+    	engine = new PotatoForwardEngine(windowWidth, windowHeight);
+	}
+	else {
+		throw std::invalid_argument("Bad renderer choice!");
+	}
+
+	engine->initialize();
 
 	while (!glfwWindowShouldClose(window)) {
 		// Set viewport size
@@ -252,10 +268,11 @@ int main(int argc, char **argv) {
 		glfwPollEvents();
 
 		// Sleep for 15 ms
-		this_thread::sleep_for(chrono::milliseconds(1));
+		this_thread::sleep_for(chrono::milliseconds(15));
 	}
 
     // Clean up engine
+	engine->shutdown();
     delete engine;
     engine = NULL;
 

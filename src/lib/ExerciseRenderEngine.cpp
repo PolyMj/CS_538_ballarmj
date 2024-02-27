@@ -10,7 +10,7 @@ ExerciseRenderEngine::ExerciseRenderEngine(int windowWidth, int windowHeight) {
     this->frontBuffer = new Image<Vec3f>(windowWidth, windowHeight);  
     this->backBuffer = new Image<Vec3f>(windowWidth, windowHeight);  
     this->screenBuffer = new Image<Vec3u>(windowWidth, windowHeight);
-    this->frontBuffer->clear(Vec3u(0,0,0));
+    this->frontBuffer->clear(Vec3f(0,0,0));
     this->screenBuffer->clear(Vec3u(0,0,0));
 
     // Generate window texture
@@ -28,6 +28,11 @@ ExerciseRenderEngine::ExerciseRenderEngine(int windowWidth, int windowHeight) {
 	parseAllSVGLines(doc, allLines);
     
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Load up SVG
+    XMLDocument doc;
+    doc.LoadFile("./starfleet.html");
+    parseAllSVGLines(doc, allLines);
 
     // Create thread
     drawThreadRunning = true;
@@ -81,22 +86,27 @@ void ExerciseRenderEngine::drawingLoop() {
         timekeeper.startFrame();
 
         // Set drawing buffer
-        Image<Vec3u> *drawBuffer = backBuffer;
+        Image<Vec3f> *drawBuffer = backBuffer;
 
         // Clear drawing buffer
-        drawBuffer->clear(Vec3u(0,0,0));
+        drawBuffer->clear(Vec3f(0,0,0));
 
         // Draw our items
         // EXAMPLE: Just draw a red column that moves every frame
         int colWidth = 200;
         int colInc = 1;
-        drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
-                Vec3u(255, 0, 0));
+        //drawAABox(drawBuffer, currentCol, 0, (currentCol+colWidth), windowHeight-1,
+        //        Vec3u(255, 0, 0));
         currentCol = (currentCol+colInc)%windowWidth;
 
-		for(int i = 0; i < allLines.size(); i++) {
-			drawLineDDA(drawBuffer, allLines.at(i));
-		}
+        //for(int i = 0; i < allLines.size(); i++) {
+        //    drawLineDDA<int,unsigned char>(drawBuffer, allLines.at(i));
+        //}
+
+        Vec3i A = Vec3i(10, 20, 0);
+        Vec3i B = Vec3i(50, 40, 0);
+        Vec3i C = Vec3i(5, 100, 0);
+        //fillTriangle(drawBuffer, A, B, C);
 
         // Swap buffers
         swapBuffers();
@@ -116,17 +126,17 @@ void ExerciseRenderEngine::drawingLoop() {
 
 void ExerciseRenderEngine::swapBuffers() {
     if(!USE_VSYNC || frontBufferMutex.try_lock()) {
-        Image<Vec3u> *tmp = backBuffer;
+        Image<Vec3f> *tmp = backBuffer;
         backBuffer = frontBuffer;
         frontBuffer = tmp;
         if(USE_VSYNC) frontBufferMutex.unlock();
     }
 }
 
-void ExerciseRenderEngine::drawAABox(   Image<Vec3u>* buffer,
+void ExerciseRenderEngine::drawAABox(   Image<Vec3f>* buffer,
                                         int sx, int sy, 
                                         int ex, int ey,
-                                        Vec3u color) {
+                                        Vec3f color) {
 
     int w = ex - sx + 1;
     int h = ey - sy + 1;

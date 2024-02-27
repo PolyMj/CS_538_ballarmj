@@ -11,7 +11,7 @@
 #include "MeshGLData.hpp"
 #include "GLSetup.hpp"
 #include "Shader.hpp"
-#include "BasicRenderEngine.hpp"
+#include "E01RenderEngine.hpp"
 using namespace std;
 using namespace tinyxml2;
 
@@ -147,6 +147,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 // Main 
 int main(int argc, char **argv) {
+
 	// Do a quick check on command line arguments
 	cout << "Number of command line arguments: " << (argc-1) << endl;
     for(int i = 1; i < argc; i++) {
@@ -193,8 +194,8 @@ int main(int argc, char **argv) {
 	GLuint programID = 0;
 	try {		
 		// Load vertex shader code and fragment shader code
-		string vertexCode = readFileToString("./shaders/BasicRenderApp/Quad.vs");
-		string fragCode = readFileToString("./shaders/BasicRenderApp/Quad.fs");
+		string vertexCode = readFileToString("./shaders/Exercise01/Quad.vs");
+		string fragCode = readFileToString("./shaders/Exercise01/Quad.fs");
 
 		// Print out shader code, just to check
 		if(DEBUG_MODE) printShaderCode(vertexCode, fragCode);
@@ -223,7 +224,7 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 
     // Create Basic Render Engine
-    BasicRenderEngine *engine = new BasicRenderEngine(windowWidth, windowHeight);
+    E01RenderEngine *engine = new E01RenderEngine(windowWidth, windowHeight);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Set viewport size
@@ -251,7 +252,7 @@ int main(int argc, char **argv) {
 		glfwPollEvents();
 
 		// Sleep for 15 ms
-		this_thread::sleep_for(chrono::milliseconds(1));
+		this_thread::sleep_for(chrono::milliseconds(15));
 	}
 
     // Clean up engine
