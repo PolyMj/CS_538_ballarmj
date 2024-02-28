@@ -23,16 +23,12 @@ ExerciseRenderEngine::ExerciseRenderEngine(int windowWidth, int windowHeight) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+	// Load SVG
 	XMLDocument doc;
-	doc.LoadFile("./startfleet.html");
+	doc.LoadFile("./starfleet.html");
 	parseAllSVGLines(doc, allLines);
     
     glBindTexture(GL_TEXTURE_2D, 0);
-
-    // Load up SVG
-    XMLDocument doc;
-    doc.LoadFile("./starfleet.html");
-    parseAllSVGLines(doc, allLines);
 
     // Create thread
     drawThreadRunning = true;
