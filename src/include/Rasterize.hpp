@@ -17,12 +17,12 @@ namespace potato {
     // Already provided
     PolyMesh* generateTestFan(const Vec3f &center, float radius, int triangleCnt);
     void drawLines(PolyMesh *mesh, vector<Fragment> &fragList, bool wireframe);
-    void fillTriangles(PolyMesh *mesh, vector<Fragment> &allFragments);    
+    void fillTriangles(PolyMesh *mesh, vector<Fragment> &fragList);    
     Fragment computeFragment(Vert &vA, Vert &vB, Vert &vC, Vec3f &bc);  
 
     // TODO FOR ASSIGNMENT    
     void drawLineDDA(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe);
     void drawLineMid(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe);    
-    void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &allFragments);   
+    void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &fragList);   
     
 };

@@ -19,6 +19,8 @@ namespace potato {
             float angle = float(angleInc*i);
             Vert v;
             v.pos = Vec3f(radius*cos(angle), radius*sin(angle), 0.0f) + center;
+            v.pos.x = std::round(v.pos.x);
+            v.pos.y = std::round(v.pos.y);
             float r = std::max(0.0f, cos(angle));
             float g = std::max(0.0f, cos(angle - colorAngleOffset));
             float b = std::max(0.0f, cos(angle - 2.0f*colorAngleOffset));
@@ -67,11 +69,11 @@ namespace potato {
     };
 
     // Fills triangles for mesh
-    void fillTriangles(PolyMesh *mesh, vector<Fragment> &allFragments) {
+    void fillTriangles(PolyMesh *mesh, vector<Fragment> &fragList) {
         vector<Vert> vertices = mesh->getVertices(); 
         vector<Face> faces = mesh->getFaces();
         for(int i = 0; i < faces.size(); i++) {
-            fillTriangle(vertices, faces.at(i), allFragments);            
+            fillTriangle(vertices, faces.at(i), fragList);            
         }
     };
 
@@ -135,7 +137,7 @@ namespace potato {
             
     };
 
-    void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &allFragments) {
+    void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &fragList) {
         // Compute bounding box
         
         // Convert to integer bounding box
