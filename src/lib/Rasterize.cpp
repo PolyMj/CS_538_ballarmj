@@ -116,7 +116,7 @@ namespace potato {
 		}
 		else {
 			currColor = startVert.color;
-			colorInc = (endVert.color - startVert.color) * (float(1)/steps);
+			colorInc = (endVert.color - startVert.color) / steps;
 		}
         
         // Draw first pixel (really add fragment)
@@ -143,33 +143,89 @@ namespace potato {
 
     void drawLineMid(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe) {
         // Convert to nearest integer locations
+		Vec3i start = roundV(startVert.pos);
+		Vec3i end = roundV(endVert.pos);
         
         // Get differences
+		int dx = end.x - start.x;
+		int dy = end.y - start.y;
         
         // Is change in Y greater?
-        
+		bool xySwapped = abs(dy) > abs(dx);
+		if (xySwapped) {
+			std::swap(dx, dy);
+			std::swap(start.x, start.y);
+			std::swap(end.x, end.y);
+		}
+
         // Start starting and ending color
+		Vec4f startColor = startVert.color;
+		Vec4f endColor = endVert.color;
         
         // Is X going in the negative direction?
+		if (dx < 0) {
+			std::swap(start, end);
+			std::swap(startColor, endColor);
+			dx = -dx;
+			dy = -dy;
+		}
         
         // Set starting y
+		float y = start.y;
         
         // Is Y going in the negative direction
+		int yInc = 1;
+		if (dy < 0) {
+			yInc = -1;
+			dy = -dy;
+			std::swap(start.y, end.y); // This works with or without this swap, not sure why
+		}
         
         // Calculate implicit line
+		ImplicitLine<float> line = ImplicitLine<float>(start, end);
         
         // Calculate starting decision variable value
+		float d = line.eval(start.x+1.0f, start.y+0.5f);
+		
+		int steps = end.x - start.x;
         
         // Get starting color and increments
+		Vec4f currColor;
+		Vec4f colorInc;
+		if (wireframe) {
+			currColor = Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+			colorInc = Vec4f(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+		else {
+			currColor = startColor;
+			colorInc = (endColor - startColor) / steps;
+		}
         
         // For each step
-        
-            // Add fragment
+		for (int x = start.x; x <= end.x; x++) {
+            Fragment f = Fragment();
+			if (xySwapped)
+				f.pos = Vec3i(y,x,0);
+			else
+				f.pos = Vec3i(x,y,0);
+			
+			f.color = currColor;
+			
+			// Add fragment
+			fragList.push_back(f);
             
             // Increment color
+			currColor = currColor + colorInc;
             
             // Check decision
-            
+			if (d < 0) {
+				y += yInc;
+				d += (dx-dy);
+			}
+			else {
+				d -= dy;
+			}
+		}
     };
 
     void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &fragList) {
