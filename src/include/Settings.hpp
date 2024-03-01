@@ -18,8 +18,8 @@
 #define DRAW_LINES_AS_WIREFRAME     false
 #define LINE_DDA                    0
 #define LINE_MID                    1
-//#define LINE_ALGORITHM              LINE_DDA
-#define LINE_ALGORITHM              LINE_MID
+#define LINE_ALGORITHM              LINE_DDA
+// #define LINE_ALGORITHM              LINE_MID
 
 // Renderer options
 #define BASE_RENDERER       0

@@ -90,20 +90,55 @@ namespace potato {
 
     void drawLineDDA(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe) {
         // Convert to nearest integer locations
+		Vec3i start = Vec3i(roundV(startVert.pos));
+		Vec3i end = Vec3i(roundV(endVert.pos));
         
         // Get differences
+		int dx = end.x - start.x;
+		int dy = end.y - start.y;
         
         // Calculate steps and increments
+		int steps = std::max(abs(dx), abs(dy));
+		float xInc = float(dx) / float(steps);
+		float yInc = float(dy) / float(steps);
         
         // Get starting coordinates 
+		float x = float(start.x);
+		float y = float(start.y);
         
         // Get starting color and increments
         // (Switch to white if wireframe is true)
+		Vec4f colorInc;
+		Vec4f currColor;
+		if (wireframe) {
+			currColor = Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+			colorInc = Vec4f(0,0,0,0);
+		}
+		else {
+			currColor = startVert.color;
+			colorInc = (endVert.color - startVert.color) * (float(1)/steps);
+		}
         
         // Draw first pixel (really add fragment)
+		Fragment firstFrag = Fragment();
+		firstFrag.pos = Vec3i(x, y, 0);
+		firstFrag.color = startVert.color;
+		fragList.push_back(firstFrag);
         
         // For each step...  
-            // Add fragment to list      
+		for (int i = 0; i < steps; i++) {
+			// Increment x, y, and color
+			x += xInc;
+			y += yInc;
+			currColor = currColor + colorInc;
+
+			Fragment newFrag = Fragment();
+			newFrag.color = currColor;
+			newFrag.pos = Vec3i(round(x), round(y), 0);
+
+			// Add fragment to list
+			fragList.push_back(newFrag);
+		}
     };
 
     void drawLineMid(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe) {
