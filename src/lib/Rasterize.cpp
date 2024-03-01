@@ -230,21 +230,32 @@ namespace potato {
 
     void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &fragList) {
         // Compute bounding box
+		BoundBoxf bbf;
+		computeBounds(vertices, face, bbf, true);
         
         // Convert to integer bounding box
+		BoundBoxi bbi = convertBoundBox(bbf);
         
-        // You may assume we have triangles only
+        // You may assume we have triangles only (thank you)
+		Vert vA = vertices.at(face.indices.at(0));
+		Vert vB = vertices.at(face.indices.at(1));
+		Vert vC = vertices.at(face.indices.at(2));
 
         // Get barycentric data
+		BaryData barryD = BaryData(vA.pos, vB.pos, vC.pos); // Bro thinks he's the flash
                 
-        // Loop through each position        
-                // Calculate barycentric weights
-                
-                // If within bounds...(greater than 0)
-                
-                    // Calculate fragment
-                    
-                    // Add to list                    
-               
+        // Loop through each position
+		for (int x = bbi.start.x; x <= bbi.end.x; x++) {
+			for (int y = bbi.start.y; y <= bbi.end.y; y++) {
+				// Calculate barrycentric weights
+				Vec3f barryW = barycentric(barryD, float(x), float(y));
+
+				// If within bounds, calculate and add fragment
+				if (barryW.x > 0 && barryW.y > 0 && barryW.z > 0) {
+					Fragment f = computeFragment(vA, vB, vC, barryW);
+					fragList.push_back(f);
+				}
+			}
+		}                        
     };
 };

@@ -12,7 +12,7 @@
 #define PRINT_AVE_STATS          true
 
 // Test geometry fan options
-#define GEO_FAN_BLADE_CNT           7
+#define GEO_FAN_BLADE_CNT           15
 
 // Drawing options
 #define DRAW_LINES_AS_WIREFRAME     true
