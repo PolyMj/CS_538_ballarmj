@@ -26,8 +26,7 @@ void PotatoForwardEngine::mergeFragments(vector<Fragment> &fragList, Image<Vec3f
 }
 
 void PotatoForwardEngine::renderToDrawBuffer(Image<Vec3f> *drawBuffer) {
-    // TODO
-
+    
     // Clear list of fragments
     allFragments.clear();
 
