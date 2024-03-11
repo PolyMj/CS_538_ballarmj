@@ -156,4 +156,45 @@ namespace potato {
                     // Add to list                    
                
     };
+
+	void drawCircleMid(Vert &centerVert, float r, vector<Fragment> &fragList) {
+		float d = 5.0f/4.0f - r;
+		int x = 0;
+		int y = (int)r;
+
+		while (x <= y) {
+			addOctantFragments(centerVert, x, y, fragList);
+			x++;
+			
+			if (d < 0) {
+				d += 2*x + 1;
+			}
+			else {
+				y--;
+				d += 2*x - 2*y;
+			}
+		}
+	}
+
+	void addOctantFragments(Vert &centerVert, float xoff, float yoff, vector<Fragment> &fragList) {
+			for (int i = 0; i < 8; i++) {
+				float x = xoff;
+				float y = yoff;
+
+				if (i & 1)
+					y = -y;
+				if (i & 2)
+					x = -x;
+				if (i & 4)
+					std::swap(x,y);
+
+				Fragment f;
+				f.pos = Vec3i(x,y,0) + roundV(centerVert.pos);
+				f.color = centerVert.color;
+
+				fragList.push_back(f);
+			}
+			
+
+	}
 };
