@@ -1,0 +1,46 @@
+#!/bin/bash
+
+all_files=(
+	"src/app/PotatoRenderApp.cpp"
+	"src/include/Bary.hpp"
+	"src/include/BasicRenderEngine.hpp"
+	"src/include/BoundBox.hpp"
+	"src/include/Buffer.hpp"
+	"src/include/ExerciseRenderEngine.hpp"
+	"src/include/Fragment.hpp"
+	"src/include/GLSetup.hpp"
+	"src/include/Line.hpp"
+	"src/include/Matrix.hpp"
+	"src/include/Mesh.hpp"
+	"src/include/MeshData.hpp"
+	"src/include/MeshGLData.hpp"
+	"src/include/Object3D.hpp"
+	"src/include/PotatoExampleEngine.hpp"
+	"src/include/PotatoForwardEngine.hpp"
+	"src/include/PotatoRenderEngine.hpp"
+	"src/include/Rasterize.hpp"
+	"src/include/Settings.hpp"
+	"src/include/Shader.hpp"	
+	"src/include/Testing.hpp"
+	"src/include/Timing.hpp"	
+	"src/include/Utility.hpp"
+	"src/include/Vector.hpp"
+	"src/include/XML.hpp"	
+	"src/lib/BasicRenderEngine.cpp"
+	"src/lib/BoundBox.cpp"
+	"src/lib/ExerciseRenderEngine.cpp"
+	"src/lib/GLSetup.cpp"
+	"src/lib/Mesh.cpp"
+	"src/lib/MeshGLData.cpp"
+	"src/lib/PotatoExampleEngine.cpp"
+	"src/lib/PotatoForwardEngine.cpp"
+	"src/lib/PotatoRenderEngine.cpp"
+	"src/lib/Shader.cpp"	
+	"src/lib/Utility.cpp"
+	"src/lib/XML.cpp"
+)
+
+for file in "${all_files[@]}"; do
+	echo $file
+	sed -i 's/[[:space:]]*$//;s/$/ /' "$file"
+done
