@@ -24,5 +24,7 @@ namespace potato {
     void drawLineDDA(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe); 
     void drawLineMid(Vert &startVert, Vert &endVert, vector<Fragment> &fragList, bool wireframe); 
     void fillTriangle(vector<Vert> &vertices, Face &face, vector<Fragment> &fragList); 
- 
+    void drawCircleMid(Vert &centerVert, float r, vector<Fragment> &fragList);
+	void addOctantFragments(Vert &centerVert, float xoff, float yoff, vector<Fragment> &fragList);
+	void drawElipseMid(Vert &centerVert);
 }; 
