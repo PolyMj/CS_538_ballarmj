@@ -54,8 +54,13 @@ namespace potato {
         vector<Face> faces {}; 
     public: 
         PolyMesh() : Object3D() {}; 
+        PolyMesh(PolyMesh *pm) {
+            Object3D();
+            vertices = vector<Vert>(pm->vertices);
+            faces = vector<Face>(pm->faces);
+        };
         virtual ~PolyMesh() {}; 
- 
+
         vector<Vert>& getVertices() { return vertices; }; 
         vector<Face>& getFaces() { return faces; }; 
     }; 

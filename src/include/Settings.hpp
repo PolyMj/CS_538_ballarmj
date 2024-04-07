@@ -25,5 +25,12 @@
 #define BASE_RENDERER       0 
 #define EXAMPLE_RENDERER    1 
 #define FORWARD_RENDERER    2 
- 
 #define RENDERER_CHOICE     FORWARD_RENDERER 
+
+// Clipping options
+#define CLIP_LEFT -1.0f
+#define CLIP_RIGHT 1.0f
+#define CLIP_BOTTOM -1.0f
+#define CLIP_TOP 1.0f
+#define CLIP_NEAR -1.0f
+#define CLIP_FAR 1.0f
