@@ -256,7 +256,7 @@ namespace potato {
 					fragList.push_back(f);
 				}
 			}
-		}                        
+		}
     };
 
 	void drawCircleMid(Vert &centerVert, float r, vector<Fragment> &fragList) {

@@ -25,7 +25,12 @@ void PotatoForwardEngine::mergeFragments(vector<Fragment> &fragList, Image<Vec3f
     // For now, just blindly write all fragments to buffer 
     for(int i = 0; i < fragList.size(); i++) { 
         Fragment f = fragList.at(i); 
-        drawBuffer->setPixel(f.pos.x, f.pos.y, Vec3f(f.color)); 
+        if (drawBuffer->getIndex(f.pos.x, f.pos.y) >= drawBuffer->size()) {
+            cerr << "Pos surpassed bounds: (" << f.pos.x << ", " << f.pos.y << ")" << endl;
+        }
+        else {
+            drawBuffer->setPixel(f.pos.x, f.pos.y, Vec3f(f.color)); 
+        }
     } 
 } 
  
@@ -38,8 +43,9 @@ void PotatoForwardEngine::renderToDrawBuffer(Image<Vec3f> *drawBuffer) {
         // PolyMesh *mesh = allMeshes.at(i); 
         PolyMesh *inputMesh = allMeshes.at(i);
         PolyMesh *mesh = renderMeshes.at(i);
+
         processGeometryOneMesh(inputMesh, Mat4f(1.0f), Mat4f(1.0f), Mat4f(1.0f), mesh);
-        cout << mesh->getFaces().size() << endl;
+        cout << "Face count = " << mesh->getFaces().size() << endl;
  
         // Get fragments for inside of polygons 
         fillTriangles(mesh, allFragments); 
@@ -60,7 +66,7 @@ void PotatoForwardEngine::processGeometryOneMesh(
 
     for (int i = 0; i < inputMesh->getVertices().size(); i++) {
         Vec4f pos = Vec4f(inputMesh->getVertices().at(i).pos, 1.0f);
-        pos = modelMat * pos;
+        pos = projMat * viewMat * modelMat * pos;
 
         // Get clipping code
         int cc = getExtendedCohenSutherlandCode(pos, CLIP_LEFT, CLIP_RIGHT, CLIP_BOTTOM, CLIP_TOP, CLIP_NEAR, CLIP_FAR);
@@ -92,9 +98,9 @@ void PotatoForwardEngine::processGeometryOneMesh(
     }
 
     for (int i = 0; i < outMesh->getVertices().size(); i++) {
-        Vert v = outMesh->getVertices().at(i);
-        v.pos.x = windowWidth*(v.pos.x + 1.0f) / 2.0f;
-        v.pos.y = windowHeight*(v.pos.y + 1.0f) / 2.0f;
+        Vert *v = &(outMesh->getVertices().at(i));
+        v->pos.x = windowWidth*(v->pos.x + 1.0f) / 2.0f;
+        v->pos.y = windowHeight*(v->pos.y + 1.0f) / 2.0f;
     }
 }
 
