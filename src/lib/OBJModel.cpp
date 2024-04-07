@@ -4,10 +4,8 @@ using namespace std;
 #define LINE_SIZE 64
 
 namespace potato {
-	PolyMesh* loadOBJModel(string filename, Vec4f color = Vec4f(1.0f, 1.0f, 1.0f, 0.5f)) {
+	PolyMesh* loadOBJModel(string filename, Vec4f color) {
 		PolyMesh *pm = new PolyMesh();
-		vector<Vert> vertices = pm->getVertices();
-		vector<Face> faces = pm->getFaces();
 		
 		FILE *file = fopen(filename.c_str(), "r");
 		if (file == NULL) {
@@ -15,8 +13,8 @@ namespace potato {
 			return NULL;
 		}
 		
-		char *line = NULL;
-		while (fgets(line, LINE_SIZE, file)) {
+		char line[LINE_SIZE];
+		while (fgets(line, LINE_SIZE, file) != NULL) {
 			stringstream line_stream = stringstream(line);
 			string identifier;
 			
@@ -31,7 +29,7 @@ namespace potato {
 					cerr << "WARNING in loadOBJModel: Vertex coordinates were improperly loaded: " 
 						<< e.what() << endl;
 				}
-				vertices.push_back(v);
+				pm->getVertices().push_back(v);
 			}
 			else if (identifier == "f") { // Face - List of vertex indices
 				Face f = Face();
@@ -40,11 +38,11 @@ namespace potato {
 					while (line_stream >> chunk) {
 						int index = 0;
 						for (char c : chunk) {
-							index *= 10;
 							if (c < '0' || c > '9') {
 								break;
 							}
 							else {
+								index *= 10;
 								index += c - '0';
 							}
 						}
@@ -57,7 +55,7 @@ namespace potato {
 								chunk << "\" from line \"" << line << "\"" << endl;
 						}
 					}
-					faces.push_back(f);
+					pm->getFaces().push_back(f);
 				}
 				catch (exception e) {
 					cerr << "ERROR in loadOBJModel: " << e.what() << endl;
@@ -67,6 +65,8 @@ namespace potato {
 				// We don't care yet
 			}
 		}
+
+		cout << "Vertices = " << pm->getVertices().size() << endl;
 	
 		fclose(file);
 		return pm;
