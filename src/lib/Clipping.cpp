@@ -3,7 +3,7 @@
 namespace potato {
 	// +/- x ==> right/left
 	// +/- y ==> up/down
-	// +/- z ==> near/far
+	// +/- z ==> far/near
 	int getExtendedCohenSutherlandCode(Vec4f v, float left, float right, float bottom, float top, float near, float far) {
 		int bitpattern = 0;
 		
@@ -21,11 +21,11 @@ namespace potato {
 			bitpattern += BIT_TOP;
 		}
 		
-		if (v.z < far) {
-			bitpattern += BIT_FAR;
-		}
-		else if (v.z > near) {
+		if (v.z < near) {
 			bitpattern += BIT_NEAR;
+		}
+		else if (v.z > far) {
+			bitpattern += BIT_FAR;
 		}
 
 		return bitpattern;

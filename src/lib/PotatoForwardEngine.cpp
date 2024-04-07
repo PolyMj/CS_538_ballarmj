@@ -26,7 +26,7 @@ void PotatoForwardEngine::mergeFragments(vector<Fragment> &fragList, Image<Vec3f
     for(int i = 0; i < fragList.size(); i++) { 
         Fragment f = fragList.at(i); 
         if (drawBuffer->getIndex(f.pos.x, f.pos.y) >= drawBuffer->size()) {
-            cerr << "Pos surpassed bounds: (" << f.pos.x << ", " << f.pos.y << ")" << endl;
+            // cerr << "Pos surpassed bounds: (" << f.pos.x << ", " << f.pos.y << ")" << endl;
         }
         else {
             drawBuffer->setPixel(f.pos.x, f.pos.y, Vec3f(f.color)); 
@@ -45,10 +45,14 @@ void PotatoForwardEngine::renderToDrawBuffer(Image<Vec3f> *drawBuffer) {
         PolyMesh *mesh = renderMeshes.at(i);
 
         processGeometryOneMesh(inputMesh, Mat4f(1.0f), Mat4f(1.0f), Mat4f(1.0f), mesh);
-        cout << "Face count = " << mesh->getFaces().size() << endl;
  
         // Get fragments for inside of polygons 
         fillTriangles(mesh, allFragments); 
+        for (int i = 0; i < allFragments.size(); i++) {
+            if (allFragments.at(i).pos.x >= windowWidth || allFragments.at(i).pos.y >= windowHeight) {
+                // cout << "Triangle fragment surpassed bounds" << endl;
+            }
+        }
  
         // Get fragments for lines 
         drawLines(mesh, allFragments, DRAW_LINES_AS_WIREFRAME); 
@@ -81,19 +85,19 @@ void PotatoForwardEngine::processGeometryOneMesh(
         outMesh->getVertices().at(i).pos = Vec3f(pos);
     }
 
-    vector<Face> inFaces = inputMesh->getFaces();
-    vector<Face> outFaces = outMesh->getFaces();
-    outFaces.clear();
+    vector<Face> *inFaces = &(inputMesh->getFaces());
+    vector<Face> *outFaces = &(outMesh->getFaces());
+    outFaces->clear();
 
-    for (int i = 0; i < inFaces.size(); i++) {
-        vector<unsigned int> indices = inFaces.at(i).indices;
+    for (int i = 0; i < inFaces->size(); i++) {
+        vector<unsigned int> indices = inFaces->at(i).indices;
         bool isInside = true;
 
         for (unsigned int index : indices) {
-            isInside = isInside && clippingCodes.at(index);
+            isInside = isInside && !clippingCodes.at(index);
         }
         if (isInside) {
-            outFaces.push_back(inFaces.at(i));
+            outFaces->push_back(inFaces->at(i));
         }
     }
 
