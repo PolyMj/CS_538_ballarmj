@@ -25,12 +25,7 @@ void PotatoForwardEngine::mergeFragments(vector<Fragment> &fragList, Image<Vec3f
     // For now, just blindly write all fragments to buffer 
     for(int i = 0; i < fragList.size(); i++) { 
         Fragment f = fragList.at(i); 
-        if (drawBuffer->getIndex(f.pos.x, f.pos.y) >= drawBuffer->size()) {
-            // cerr << "Pos surpassed bounds: (" << f.pos.x << ", " << f.pos.y << ")" << endl;
-        }
-        else {
-            drawBuffer->setPixel(f.pos.x, f.pos.y, Vec3f(f.color)); 
-        }
+        drawBuffer->setPixel(f.pos.x, f.pos.y, Vec3f(f.color)); 
     } 
 } 
  
@@ -48,11 +43,6 @@ void PotatoForwardEngine::renderToDrawBuffer(Image<Vec3f> *drawBuffer) {
  
         // Get fragments for inside of polygons 
         fillTriangles(mesh, allFragments); 
-        for (int i = 0; i < allFragments.size(); i++) {
-            if (allFragments.at(i).pos.x >= windowWidth || allFragments.at(i).pos.y >= windowHeight) {
-                // cout << "Triangle fragment surpassed bounds" << endl;
-            }
-        }
  
         // Get fragments for lines 
         drawLines(mesh, allFragments, DRAW_LINES_AS_WIREFRAME); 
