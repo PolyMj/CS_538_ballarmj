@@ -68,6 +68,7 @@ void PotatoForwardEngine::processGeometryOneMesh(
     ) {
     vector<int> clippingCodes {};
 
+    // Apply matrix transformations to each vertex and store the updated version in outMesh
     for (int i = 0; i < inputMesh->getVertices().size(); i++) {
         Vec4f pos = Vec4f(inputMesh->getVertices().at(i).pos, 1.0f);
         pos = projMat * viewMat * modelMat * pos;
@@ -76,7 +77,7 @@ void PotatoForwardEngine::processGeometryOneMesh(
         int cc = getExtendedCohenSutherlandCode(pos, CLIP_LEFT, CLIP_RIGHT, CLIP_BOTTOM, CLIP_TOP, CLIP_NEAR, CLIP_FAR);
         clippingCodes.push_back(cc);
 
-        // This doesn't do anything atm (I don't think?)
+        // Currently, w is hardcoded to 1.0f so I don't think this will do anything
         pos.x /= pos.w;
         pos.y /= pos.w;
         pos.z /= pos.w;
@@ -89,18 +90,19 @@ void PotatoForwardEngine::processGeometryOneMesh(
     vector<Face> *outFaces = &(outMesh->getFaces());
     outFaces->clear();
 
+    // Add only faces which are completely within the bounds of the screen to outMesh
     for (int i = 0; i < inFaces->size(); i++) {
-        vector<unsigned int> indices = inFaces->at(i).indices;
         bool isInside = true;
-
-        for (unsigned int index : indices) {
-            isInside = isInside && !clippingCodes.at(index);
+        for (unsigned int index : inFaces->at(i).indices) {
+            isInside = isInside && !clippingCodes.at(index); // !clippingCode ==> on-screen
         }
+
         if (isInside) {
             outFaces->push_back(inFaces->at(i));
         }
     }
 
+    // Transform from normalized device coordinates to window coordinates
     for (int i = 0; i < outMesh->getVertices().size(); i++) {
         Vert *v = &(outMesh->getVertices().at(i));
         v->pos.x = windowWidth*(v->pos.x + 1.0f) / 2.0f;
