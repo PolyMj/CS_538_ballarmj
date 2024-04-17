@@ -15,6 +15,7 @@
 #include "PotatoRenderEngine.hpp" 
 #include "PotatoForwardEngine.hpp" 
 #include "PotatoExampleEngine.hpp" 
+#include "PotatoRaytracer.hpp"
  
 using namespace std; 
 using namespace tinyxml2; 
