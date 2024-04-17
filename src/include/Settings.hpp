@@ -38,3 +38,5 @@
 
 // Raytracer options
 #define MAX_BOUNCES 10
+#define NEAR_PLANE 0.1f
+#define VIEW_HEIGHT NEAR_PLANE

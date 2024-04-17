@@ -1,7 +1,7 @@
 #include "PotatoRaytracerEngine.hpp"
 
 // Load models
-PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRaytracerEngine(windowWidth, windowHeight) {
+PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
 	
 }
 
@@ -34,6 +34,14 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	// For each ray starting from camera
 		// raycast()
+	drawBuffer->clear();
+	for (int x = 0; x < windowWidth; x++) {
+		Ray ray;
+		for (int y = 0; y < windowHeight; y++) {
+			ray = Ray(windowWidth, windowHeight, x, y);
+			drawBuffer->setPixel(x, y, raycast(ray));
+		}
+	}
 }
 
 // Returns the color from the given raycast
@@ -45,4 +53,13 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		// Else
 			// Break
 	// Return ray.color
+	Vec3f color = ray.posFromT(50.0f);
+	color.z /= 5.0f;
+
+	float color_clip = 1.5f;
+	for (int i = 0; i < 3; i++) {
+		color[i] = std::max(0.0f, color[i]);
+		color[i] = color[i] / (color_clip + color[i]);
+	}
+	return color;
 }
