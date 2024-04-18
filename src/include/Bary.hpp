@@ -2,7 +2,9 @@
  
 #include <cmath> 
 #include <vector> 
-#include <iostream> 
+#include <iostream>
+// TIL C++ has therese weird specific-length integers and some "more optimized" versions? Hooray?
+#include <cstdint> // uint_fast8_t
 #include "Vector.hpp" 
 #include "Line.hpp" 
 using namespace std; 
@@ -13,7 +15,8 @@ namespace potato {
         ImplicitLine<float> AC; 
         float Cval {}; 
         float Bval {}; 
- 
+        
+        // May rewrite to use Vec2's, but that would require creating Vec2's
         BaryData(Vec3f &A, Vec3f &B, Vec3f &C) { 
             AB = ImplicitLine<float>(A,B); 
             AC = ImplicitLine<float>(A,C); 
@@ -30,4 +33,45 @@ namespace potato {
         bary.x = 1.0f - bary.y - bary.z; 
         return bary; 
     }; 
+
+    inline bool isInside(Vec3f bary) {
+        return (
+            bary.x > 0 &&
+            bary.y > 0 &&
+            bary.z > 0
+        );
+    }
+
+    // Returns a boolean of whether or not the point is inside the triangle
+    // Assumes you've already validated that the point is coplanar with the triangle
+    // Will use whichever two axes are smallest in the normal for barycentric calculations
+    inline bool baryBool3D(Vec3f pos, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal) {
+        // Find two smallest normal values and store their indicies
+        uint_fast8_t u, v;
+        if (abs(normal.x) < abs(normal.y)) {
+            u = 0;
+            if (abs(normal.y) < abs(normal.z))
+                v = 1;
+            else
+                v = 2;
+        }
+        else {
+            u = 1;
+            if (abs(normal.x) < abs(normal.z))
+                v = 0;
+            else
+                v = 2;
+        }
+
+        // Get points of triangle using 2 axes only
+        Vec3f A = Vec3f(p1[u], p1[v], 0.0f);
+        Vec3f B = Vec3f(p2[u], p2[v], 0.0f);
+        Vec3f C = Vec3f(p3[u], p3[v], 0.0f);
+
+        // Get bary data
+        BaryData bd = BaryData(A, B, C);
+        Vec3f bary = barycentric(bd, pos[u], pos[v]);
+
+        return isInside(bary);
+    }
 }; 

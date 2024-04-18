@@ -9,6 +9,20 @@
 using namespace std; 
 using namespace potato; 
 using namespace tinyxml2; 
+
+// Temporary, just for getting things started
+struct Triangle {
+	Vec3f A;
+	Vec3f B;
+	Vec3f C;
+	Vec3f normal;
+
+	void computeNormal() {
+		Vec3f AB = B - A;
+		Vec3f AC = C - A;
+		normal = AB.cross(AC).normalize();
+	}
+};
  
 class PotatoRaytracerEngine : public PotatoRenderEngine { 
     private: 
@@ -19,6 +33,8 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
 
         Vec4f cameraPos = Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
         Vec4f cameraLookat = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+
+        Triangle tri;
 
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);

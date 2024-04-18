@@ -383,4 +383,10 @@ namespace potato {
         vi.z = (int)std::round(v.z); 
         return vi; 
     }; 
+
+        
+    inline void printV3(Vec3f v, bool endline = true) {
+        cout << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+        if (endline) cout << endl;
+    }
 }; 
