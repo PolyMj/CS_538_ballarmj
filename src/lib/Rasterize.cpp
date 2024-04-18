@@ -122,9 +122,9 @@ namespace potato {
         // Draw first pixel (really add fragment)
 		Fragment firstFrag = Fragment();
 		firstFrag.pos = Vec3i(x, y, 0);
-		firstFrag.color = startVert.color;
+		firstFrag.color = currColor;
 		fragList.push_back(firstFrag);
-        
+
         // For each step...  
 		for (int i = 0; i < steps; i++) {
 			// Increment x, y, and color
