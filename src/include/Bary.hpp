@@ -78,13 +78,17 @@ namespace potato {
         return bary;
     }
 
+    // Interpolates 3 values using barycentric coordinates
+    // Allows any type T such that T*float is defined
     template<typename T>
-    inline T interpolate(Vec3f bary, T A, T B, T C) {
+    inline T interpolateBary(Vec3f bary, T A, T B, T C) {
         return A*bary.x + B*bary.y + C*bary.z;
     };
 
+    // Regularly adds/ignors values along each axis depending on the bary value
+    // Uses like "gridlines" to see the shape of value distribution and see if laws of perspective are being obeyed
     template<typename T>
-    inline T interpGrid(Vec3f bary, T A, T B, T C) {
+    inline T interpolateBaryGrid(Vec3f bary, T A, T B, T C) {
         T res;
         if (fmod(bary.x, GRID_DIV) < GRID_DIV/2.0f) {
             res = res + A;
