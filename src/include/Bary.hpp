@@ -36,16 +36,16 @@ namespace potato {
 
     inline bool isInside(Vec3f bary) {
         return (
-            bary.x > 0 &&
-            bary.y > 0 &&
-            bary.z > 0
+            bary.x >= 0 &&
+            bary.y >= 0 &&
+            bary.z >= 0
         );
     }
 
     // Returns a boolean of whether or not the point is inside the triangle
     // Assumes you've already validated that the point is coplanar with the triangle
     // Will use whichever two axes are smallest in the normal for barycentric calculations
-    inline bool baryBool3D(Vec3f pos, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal) {
+    inline Vec3f bary3D(Vec3f pos, Vec3f p1, Vec3f p2, Vec3f p3, Vec3f normal) {
         // Find two smallest normal values and store their indicies
         uint_fast8_t u, v;
         if (abs(normal.x) < abs(normal.y)) {
@@ -72,6 +72,6 @@ namespace potato {
         BaryData bd = BaryData(A, B, C);
         Vec3f bary = barycentric(bd, pos[u], pos[v]);
 
-        return isInside(bary);
+        return bary;
     }
 }; 

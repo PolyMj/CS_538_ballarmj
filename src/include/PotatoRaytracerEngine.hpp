@@ -12,14 +12,14 @@ using namespace tinyxml2;
 
 // Temporary, just for getting things started
 struct Triangle {
-	Vec3f A;
-	Vec3f B;
-	Vec3f C;
+	Vert A;
+	Vert B;
+	Vert C;
 	Vec3f normal;
 
 	void computeNormal() {
-		Vec3f AB = B - A;
-		Vec3f AC = C - A;
+		Vec3f AB = B.pos - A.pos;
+		Vec3f AC = C.pos - A.pos;
 		normal = AB.cross(AC).normalize();
 	}
 };

@@ -35,8 +35,9 @@ namespace potato {
 			
 			// Rays will start from a position on the near plane
 			// Must be NEGATIVE of NEAR_PLANE since camera is facing in negative Z
-			direction = Vec3f(ray_x, ray_y, -NEAR_PLANE).normalize();
+			direction = Vec3f(ray_x, ray_y, -NEAR_PLANE);
 			start = direction;
+			direction = direction.normalize();
 		};
 
 

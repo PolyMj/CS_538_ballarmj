@@ -13,7 +13,11 @@ namespace potato {
  
     struct Vert { 
         Vec3f pos {}; 
-        Vec4f color {}; // [0,1] 
+        // Union is used because several other programs refer to this attribute as "color",
+        // but I specifically want diffuse color
+        union {Vec4f color {}, diffuse; }; // [0,1] 
+        Vec4f specular;
+
  
         Vert operator+(const Vert &other) const { 
             return { 

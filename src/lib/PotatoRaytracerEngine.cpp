@@ -2,10 +2,15 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	tri.A = Vec3f(-0.5f, -0.3f, -2.0f);
-	tri.B = Vec3f(0.5f, -0.6f, -3.0f);
-	tri.C = Vec3f(0.1f, 0.5f, -2.5f);
+	float Z = -10.0f;
+	tri.A.pos = Vec3f(-1.5f, -1.0f, Z);
+	tri.B.pos = Vec3f(1.5f, -1.0f, Z);
+	tri.C.pos = Vec3f(1.5f, 1.0f, Z);
 	tri.computeNormal();
+
+	tri.A.color = Vec4f(0.0f, 1.0f, 1.0f, 1.0f);
+	tri.B.color = Vec4f(1.0f, 0.0f, 1.0f, 1.0f);
+	tri.C.color = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
 }
 
 // Delete/clear all data
@@ -57,27 +62,22 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		// Else
 			// Break
 
-	float cld_t = ray.collide(tri.A, tri.normal);
+	float cld_t = ray.collide(tri.A.pos, tri.normal);
 
 	if (cld_t >= 0) {
 		Vec3f pos = ray.posFromT(cld_t);
-		if (baryBool3D(pos, tri.A, tri.B, tri.C, tri.normal)) {
-			color = pos + Vec3f(0.5f, 0.5f, 3.0f);
+		Vec3f bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
+		if (isInside(bary)) {
+			color = tri.A.color*bary.x + tri.B.color*bary.y + tri.C.color*bary.z;
 		}
-		// color = ray.posFromT(5.0f);
-		// color.z /= 5.0f;
 	}
 
-	
-	// if (baryBool3D(Vec3f(0.1f, 0.2f, -1.0f), tri.A, tri.B, tri.C, tri.normal)) {
-	// 	cout << "Hooray!" << endl;
+	// // Clipping
+	// float color_clip = 2.0f;
+	// for (int i = 0; i < 3; i++) {
+	// 	color[i] = std::max(0.0f, color[i]);
+	// 	color[i] = color[i] / (color_clip + color[i]);
 	// }
 
-
-	float color_clip = 2.0f;
-	for (int i = 0; i < 3; i++) {
-		color[i] = std::max(0.0f, color[i]);
-		color[i] = color[i] / (color_clip + color[i]);
-	}
 	return color;
 }
