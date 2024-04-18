@@ -2,8 +2,8 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	float Z = -10.0f;
-	tri.A.pos = Vec3f(-1.5f, -1.0f, Z);
+	float Z = -3.0f;
+	tri.A.pos = Vec3f(-1.5f, -1.0f, Z*3);
 	tri.B.pos = Vec3f(1.5f, -1.0f, Z);
 	tri.C.pos = Vec3f(1.5f, 1.0f, Z);
 	tri.computeNormal();
@@ -68,7 +68,7 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		Vec3f pos = ray.posFromT(cld_t);
 		Vec3f bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
 		if (isInside(bary)) {
-			color = tri.A.color*bary.x + tri.B.color*bary.y + tri.C.color*bary.z;
+			color = interpGrid(bary, tri.A.color, tri.B.color, tri.C.color);
 		}
 	}
 

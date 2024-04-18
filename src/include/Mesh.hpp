@@ -17,6 +17,7 @@ namespace potato {
         // but I specifically want diffuse color
         union {Vec4f color {}, diffuse; }; // [0,1] 
         Vec4f specular;
+        Vec3f normal;
 
  
         Vert operator+(const Vert &other) const { 

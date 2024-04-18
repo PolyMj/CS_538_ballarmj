@@ -8,6 +8,9 @@
 #include "Vector.hpp" 
 #include "Line.hpp" 
 using namespace std; 
+
+#define GRID_CNT 5
+#define GRID_DIV (1.0f)/GRID_CNT
  
 namespace potato { 
     struct BaryData { 
@@ -40,7 +43,7 @@ namespace potato {
             bary.y >= 0 &&
             bary.z >= 0
         );
-    }
+    };
 
     // Returns a boolean of whether or not the point is inside the triangle
     // Assumes you've already validated that the point is coplanar with the triangle
@@ -74,4 +77,24 @@ namespace potato {
 
         return bary;
     }
-}; 
+
+    template<typename T>
+    inline T interpolate(Vec3f bary, T A, T B, T C) {
+        return A*bary.x + B*bary.y + C*bary.z;
+    };
+
+    template<typename T>
+    inline T interpGrid(Vec3f bary, T A, T B, T C) {
+        T res;
+        if (fmod(bary.x, GRID_DIV) < GRID_DIV/2.0f) {
+            res = res + A;
+        }
+        if (fmod(bary.y, GRID_DIV) < GRID_DIV/2.0f) {
+            res = res + B;
+        }
+        if (fmod(bary.z, GRID_DIV) < GRID_DIV/2.0f) {
+            res = res + C;
+        }
+        return res;
+    }
+};
