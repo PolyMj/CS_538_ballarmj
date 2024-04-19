@@ -13,6 +13,7 @@ namespace potato {
         Vec3<T> end; 
     }; 
  
+    using BoundBoxd = BoundBox<double>;
     using BoundBoxf = BoundBox<float>; 
     using BoundBoxi = BoundBox<int>; 
  

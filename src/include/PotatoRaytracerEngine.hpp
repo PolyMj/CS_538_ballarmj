@@ -2,7 +2,7 @@
  
 #include "PotatoRenderEngine.hpp" 
 #include "Rasterize.hpp" 
-#include "OBJModel.hpp"
+#include "Meshd.hpp"
 #include "Matrix.hpp"
 // #include "Clipping.hpp"
 #include "Ray.hpp"
@@ -12,14 +12,14 @@ using namespace tinyxml2;
 
 // Temporary, just for getting things started
 struct Triangle {
-	Vert A;
-	Vert B;
-	Vert C;
-	Vec3f normal;
+	Vertd A;
+	Vertd B;
+	Vertd C;
+	Vec3d normal;
 
 	void computeNormal() {
-		Vec3f AB = B.pos - A.pos;
-		Vec3f AC = C.pos - A.pos;
+		Vec3d AB = B.pos - A.pos;
+		Vec3d AC = C.pos - A.pos;
 		normal = AB.cross(AC).normalize();
 	}
 };

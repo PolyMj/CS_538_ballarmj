@@ -8,4 +8,11 @@ namespace potato {
         boxi.end = floorV(boxf.end); 
         return boxi; 
     }; 
+
+    BoundBoxi convertBoundBox(BoundBoxd &boxd) { 
+        BoundBoxi boxi; 
+        boxi.start = floorV(boxd.start); 
+        boxi.end = floorV(boxd.end); 
+        return boxi; 
+    }; 
 }; 

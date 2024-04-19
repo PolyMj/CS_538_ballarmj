@@ -3,14 +3,14 @@
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
 	float Z = -2.4f;
-	tri.A.pos = Vec3f(-1.5f, -1.0f, Z);
-	tri.B.pos = Vec3f(1.5f, -1.0f, Z);
-	tri.C.pos = Vec3f(1.5f, 1.0f, Z);
+	tri.A.pos = Vec3d(-1.5f, -1.0f, Z);
+	tri.B.pos = Vec3d(1.5f, -1.0f, Z);
+	tri.C.pos = Vec3d(1.5f, 1.0f, Z);
 	tri.computeNormal();
 
-	tri.A.color = Vec4f(0.0f, 1.0f, 1.0f, 1.0f);
-	tri.B.color = Vec4f(1.0f, 0.0f, 1.0f, 1.0f);
-	tri.C.color = Vec4f(1.0f, 1.0f, 0.0f, 1.0f);
+	tri.A.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
+	tri.B.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
+	tri.C.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
 }
 
 // Delete/clear all data
@@ -62,12 +62,12 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		// Else
 			// Break
 
-	Vert cld_vert;
+	Vertd cld_vert;
 	float cld_t = ray.collide(tri.A.pos, tri.normal);
 
 	if (cld_t >= 0) {
-		Vec3f pos = ray.posFromT(cld_t);
-		Vec3f bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
+		Vec3d pos = ray.posFromT(cld_t);
+		Vec3d bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
 		if (isInside(bary)) {
 			cld_vert.color = interpolateBary(bary, tri.A.color, tri.B.color, tri.C.color);
 			cld_vert.pos = interpolateBary(bary, tri.A.pos, tri.B.pos, tri.C.pos);
