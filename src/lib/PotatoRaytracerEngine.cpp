@@ -2,31 +2,8 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	Triangle tri;
 	double Z = -2.4f;
-	tri.A.pos = Vec3d(-1.5f, -1.0f, Z);
-	tri.B.pos = Vec3d(1.5f, -1.0f, Z);
-	tri.C.pos = Vec3d(1.5f, 1.0f, Z);
-	tri.computeNormal();
-
-	tri.A.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
-	tri.B.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
-	tri.C.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
-	trilist.push_back(tri);
-
-	Triangle tri2;
-	tri2.A.pos = Vec3d(-1.7f, -1.0f, Z-0.1);
-	tri2.B.pos = Vec3d(1.5f, -1.0f, Z+0.1);
-	tri2.C.pos = Vec3d(1.5f, 1.2f, Z+0.3);
-	tri2.computeNormal();
-
-	tri2.A.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	tri2.B.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	tri2.C.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	trilist.push_back(tri2);
-
-
-	// PolyMesh
+	// Testing PolyMeshd
 	PolyMeshd *mesh = new PolyMeshd();
 	Vertd v1 = Vertd();
 	v1.pos = Vec3d(-1.5f, -1.0f, Z);
@@ -69,15 +46,30 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 }
 
 // Draw everything to draw buffer; called once per drawing loop iteration
-void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
+void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> *drawBuffer) {
 	// For each ray starting from camera
 		// raycast()
+	allThreads.clear();
 	drawBuffer->clear();
-	for (int x = 0; x < windowWidth; x++) {
-		Ray ray;
-		for (int y = 0; y < windowHeight; y++) {
-			ray = Ray(windowWidth, windowHeight, x, y);
-			drawBuffer->setPixel(x, y, raycast(ray));
+	for (int y = 0; y < windowHeight; y += ROWS_PER_THREAD) {
+		if (y+ROWS_PER_THREAD >= windowHeight) {
+			allThreads.push_back( new thread(&PotatoRaytracerEngine::drawRows, this, drawBuffer, y, windowHeight-y) );
+		}
+		else {
+			allThreads.push_back( new thread(&PotatoRaytracerEngine::drawRows, this, drawBuffer, y, ROWS_PER_THREAD) );
+		}
+	}
+
+	for (thread* thread : allThreads) {
+		thread->join();
+		delete thread;
+	}
+}
+
+void PotatoRaytracerEngine::drawRows(Image<Vec3f> *drawBuffer, int start_y, int count) {
+	for (int y = start_y; y < count+start_y; y++) {
+		for (int x = 0; x < windowWidth; x++) {
+			drawBuffer->setPixel(x,y, raycast(Ray(windowWidth, windowHeight, x, y)));
 		}
 	}
 }

@@ -10,19 +10,7 @@ using namespace std;
 using namespace potato; 
 using namespace tinyxml2; 
 
-// Temporary, just for getting things started
-struct Triangle {
-	Vertd A;
-	Vertd B;
-	Vertd C;
-	Vec3d normal;
-
-	void computeNormal() {
-		Vec3d AB = B.pos - A.pos;
-		Vec3d AC = C.pos - A.pos;
-		normal = AB.cross(AC).normalize();
-	}
-};
+#define ROWS_PER_THREAD 20
  
 class PotatoRaytracerEngine : public PotatoRenderEngine { 
     private: 
@@ -34,13 +22,14 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         Vec4f cameraPos = Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
         Vec4f cameraLookat = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
 
-        vector<Triangle> trilist;
         vector<PolyMeshd*> meshes;
+        vector<thread*> allThreads;
 
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
 
         Vec3f PotatoRaytracerEngine::raycast(Ray ray);
+        void PotatoRaytracerEngine::drawRows(Image<Vec3f> *drawBuffer, int start_y, int count);
  
     public: 
         PotatoRaytracerEngine(int windowWidth, int windowHeight); 
