@@ -34,7 +34,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         Vec4f cameraPos = Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
         Vec4f cameraLookat = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
 
-        Triangle tri;
+        vector<Triangle> trilist;
 
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);

@@ -2,7 +2,8 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	float Z = -2.4f;
+	Triangle tri;
+	double Z = -2.4f;
 	tri.A.pos = Vec3d(-1.5f, -1.0f, Z);
 	tri.B.pos = Vec3d(1.5f, -1.0f, Z);
 	tri.C.pos = Vec3d(1.5f, 1.0f, Z);
@@ -11,6 +12,18 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	tri.A.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
 	tri.B.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
 	tri.C.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
+	trilist.push_back(tri);
+
+	Triangle tri2;
+	tri2.A.pos = Vec3d(-1.7f, -1.0f, Z-0.1);
+	tri2.B.pos = Vec3d(1.5f, -1.0f, Z+0.1);
+	tri2.C.pos = Vec3d(1.5f, 1.2f, Z+0.3);
+	tri2.computeNormal();
+
+	tri2.A.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
+	tri2.B.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
+	tri2.C.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
+	trilist.push_back(tri2);
 }
 
 // Delete/clear all data
@@ -62,16 +75,33 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		// Else
 			// Break
 
-	Vertd cld_vert;
-	float cld_t = ray.collide(tri.A.pos, tri.normal);
+	Vertd last_vert;
+	bool hasBeenACollide = false;
 
-	if (cld_t >= 0) {
-		Vec3d pos = ray.posFromT(cld_t);
-		Vec3d bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
-		if (isInside(bary)) {
-			cld_vert.color = interpolateBary(bary, tri.A.color, tri.B.color, tri.C.color);
-			cld_vert.pos = interpolateBary(bary, tri.A.pos, tri.B.pos, tri.C.pos);
-			cld_vert.normal = tri.normal;
+	for (int i = 0; i < trilist.size(); i++) {
+		Triangle tri = trilist.at(i);
+		double cld_t = ray.collide(tri.A.pos, tri.normal);
+
+		if (cld_t >= 0) {
+			Vec3d pos = ray.posFromT(cld_t);
+			Vec3d bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
+			if (isInside(bary)) {
+				Vertd current_vert;
+				current_vert.color = interpolateBary(bary, tri.A.color, tri.B.color, tri.C.color);
+				current_vert.pos = interpolateBary(bary, tri.A.pos, tri.B.pos, tri.C.pos);
+				current_vert.normal = tri.normal;
+
+				if (hasBeenACollide) {
+					// Store closer one in last vert
+					if (last_vert.pos.z > current_vert.pos.z) {
+						last_vert = current_vert;
+					}
+				}
+				else {
+					last_vert = current_vert;
+					hasBeenACollide = true;
+				}
+			}
 		}
 	}
 
@@ -82,5 +112,5 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	// 	color[i] = color[i] / (color_clip + color[i]);
 	// }
 
-	return cld_vert.color;
+	return last_vert.color;
 }
