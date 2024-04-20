@@ -24,6 +24,23 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	tri2.B.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
 	tri2.C.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
 	trilist.push_back(tri2);
+
+
+	// PolyMesh
+	PolyMeshd *mesh = new PolyMeshd();
+	Vertd v1 = Vertd();
+	v1.pos = Vec3d(-1.5f, -1.0f, Z);
+	v1.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
+	Vertd v2 = Vertd();
+	v2.pos = Vec3d(1.5f, -1.0f, Z);
+	v2.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
+	Vertd v3 = Vertd();
+	v3.pos = Vec3d(1.5f, 1.0f, Z);
+	v3.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
+
+	mesh->addTriangleFace(v1, v2, v3);
+	mesh->computeBounds();
+	meshes.push_back(mesh);
 }
 
 // Delete/clear all data
@@ -78,28 +95,37 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	Vertd last_vert;
 	bool hasBeenACollide = false;
 
-	for (int i = 0; i < trilist.size(); i++) {
-		Triangle tri = trilist.at(i);
-		double cld_t = ray.collide(tri.A.pos, tri.normal);
+	for (int i = 0; i < meshes.size(); i++) {
+		PolyMeshd *mesh = meshes.at(i);
+		
+		if (ray.intersectsBBox(mesh->getBB())) {
+			for (int i = 0; i < mesh->getFaces().size(); i++) {
+				Faced face = mesh->getFaces().at(i);
+				Vertd v0 = mesh->getVertices().at(face.indices.at(0));
+				Vertd v1 = mesh->getVertices().at(face.indices.at(1));
+				Vertd v2 = mesh->getVertices().at(face.indices.at(2));
+				
+				double cld_t = ray.collide(v1.pos, face.normal);
+				if (cld_t >= 0) {
+					Vec3d pos = ray.posFromT(cld_t);
+					Vec3d bary = bary3D(pos, v0.pos, v1.pos, v2.pos, face.normal);
+					if (isInside(bary)) {
+						Vertd current_vert;
+						current_vert.color = interpolateBary(bary, v0.color, v1.color, v2.color);
+						current_vert.pos = interpolateBary(bary, v0.pos, v1.pos, v2.pos);
+						current_vert.normal = face.normal;
 
-		if (cld_t >= 0) {
-			Vec3d pos = ray.posFromT(cld_t);
-			Vec3d bary = bary3D(pos, tri.A.pos, tri.B.pos, tri.C.pos, tri.normal);
-			if (isInside(bary)) {
-				Vertd current_vert;
-				current_vert.color = interpolateBary(bary, tri.A.color, tri.B.color, tri.C.color);
-				current_vert.pos = interpolateBary(bary, tri.A.pos, tri.B.pos, tri.C.pos);
-				current_vert.normal = tri.normal;
-
-				if (hasBeenACollide) {
-					// Store closer one in last vert
-					if (last_vert.pos.z > current_vert.pos.z) {
-						last_vert = current_vert;
+						if (hasBeenACollide) {
+							// Store closer one in last vert
+							if (last_vert.pos.z > current_vert.pos.z) {
+								last_vert = current_vert;
+							}
+						}
+						else {
+							last_vert = current_vert;
+							hasBeenACollide = true;
+						}
 					}
-				}
-				else {
-					last_vert = current_vert;
-					hasBeenACollide = true;
 				}
 			}
 		}
