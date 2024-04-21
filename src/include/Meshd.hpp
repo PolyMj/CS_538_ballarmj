@@ -149,6 +149,24 @@ namespace potato {
             computeNormals(); // Could use a normal transform but this is easier for now
             computeBounds();
         };
+
+        void unifornRecolor(Vec4d color) {
+            for (int i = 0; i < vertices.size(); i++) {
+                vertices.at(i).color = color;
+            }
+        };
+
+        void debugRecolor() {
+            for (int i = 0; i < vertices.size(); i++) {
+                Vec3d pos = vertices.at(i).pos;
+                vertices.at(i).color = Vec4d(
+                    abs(pos.x) / (abs(pos.x) + 1),
+                    abs(pos.y) / (abs(pos.y) + 1),
+                    abs(pos.z) / (abs(pos.z) + 1),
+                    1.0
+                );
+            }
+        };
     }; 
  
     // Compute bounds for single face 
@@ -158,5 +176,5 @@ namespace potato {
     void computeBounds(PolyMeshd *mesh, BoundBoxd &box, bool startBox=true); 
 
     // Load a .obj model
-    PolyMeshd* loadOBJTriangleMesh(string filename, Vec4d diff_color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f));
+    PolyMeshd* loadOBJTriangleMesh(string filename);
 }; 

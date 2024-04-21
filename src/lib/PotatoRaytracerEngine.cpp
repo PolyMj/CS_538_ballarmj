@@ -9,27 +9,11 @@
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
 	double Z = -3.6f;
-	// // PolyMesh
-	// PolyMeshd *mesh = new PolyMeshd();
-	// Vertd v1 = Vertd();
-	// v1.pos = Vec3d(0.4f, -0.5f, Z*2);
-	// v1.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
-	// Vertd v2 = Vertd();
-	// v2.pos = Vec3d(2.0f, -1.0f, Z);
-	// v2.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
-	// Vertd v3 = Vertd();
-	// v3.pos = Vec3d(2.0f, 1.0f, Z);
-	// v3.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
-
-	// mesh->addTriangleFace(v1, v2, v3);
-	// mesh->computeBounds();
-	// mesh->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(0.0, 0.0, -3.0, 1.0)));
-	// meshes.push_back(mesh);
-
 
 	PolyMeshd *model = new PolyMeshd();
 	model = loadOBJTriangleMesh("sampleModels/teapot.obj");
-	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(1.5, -1.5, -4.0, 1.0)));
+	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(1.5, -1.5, -20.0, 1.0)));
+	model->debugRecolor();
 	meshes.push_back(model);
 }
 
