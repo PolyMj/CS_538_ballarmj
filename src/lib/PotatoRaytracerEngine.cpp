@@ -111,72 +111,116 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	return Vec3f(ray.color * scalar);
 }
 
+
+struct BBCollideData {
+	int meshIndex;
+	double near_t;
+	double far_t;
+};
+
 // Returns the color from the given raycast
 bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
-	// Repeat [MAX_BOUNCES] times
-		// If ray collides with an object
-			// Ray is now its reflection { ray.reflect(normal) }
-			// (Potentially) Check and add ambient/diffuse lighting in some way
-		// Else
-			// Break
+	
+	vector<BBCollideData> bb_collides = {};
+	// For each mesh
+	for (int i = 0; i < meshes.size(); i++) {
+		PolyMeshd* mesh = meshes.at(i);
+		// Get collison data
+		double t1, t2;
+		if (!ray.intersectsBBox(mesh->getBB(), t1, t2))
+			continue; // Skip if doesn't intersect
+
+		// Ensure that t1 is the first intersection
+		if (t2 < t1)
+			swap(t1, t2);
+
+		// If there was only one intersection, the ray started insdie the bounding box
+		if (t1 < 0)
+			t1 = 0; // Set initial "intersection" to ray start
+		
+		// Put all data into a struct
+		BBCollideData new_collide = {
+			i,
+			t1,
+			t2
+		};
+		
+		// If list of collides is empty, add first one
+		if (!bb_collides.size()) {
+			bb_collides.push_back(new_collide);
+			continue;
+		}
+
+		bool added = false;
+		for (int i = 0; i < bb_collides.size(); i++) {
+			// Insert new collide to correct location (sorted by near_t)
+			if (bb_collides.at(i).near_t > new_collide.near_t) {
+				bb_collides.insert(bb_collides.begin()+i, new_collide);
+				added = true;
+				break; // new_collide already inserted, no need to continue
+			}
+		}
+
+		// If it hasn't been added, add it to the end of the list
+		if (!added)
+			bb_collides.push_back(new_collide);
+	}
+
 
 	Vertd last_vert;
 	double last_cld_t = -1;
 	bool hasBeenACollide = false;
 
-	for (int i = 0; i < meshes.size(); i++) {
-		PolyMeshd *mesh = meshes.at(i);
+	// For each bounding box collision
+	for (BBCollideData bb_cld : bb_collides) {
+		// Get the corresponding mesh
+		PolyMeshd *mesh = meshes.at(bb_cld.meshIndex);
 		
-		double t1, t2;
-		if (ray.intersectsBBox(mesh->getBB(), t1, t2)) {
-			BoundBoxd bb = BoundBoxd(ray.posFromT(t1), ray.posFromT(t2));
+		// Get the bounding box of the ray's intersection with the mesh's bounding box
+		BoundBoxd bb = BoundBoxd(ray.posFromT(bb_cld.near_t), ray.posFromT(bb_cld.far_t));
 
-			// If the closest possible collision is still further than another found collision
-			if (hasBeenACollide && min(t1, t2) > last_cld_t)
+		// If the closest possible collision is still further than another found collision
+		if (hasBeenACollide && min(bb_cld.near_t, bb_cld.far_t) > last_cld_t)
+			continue;
+		
+		// For each face
+		for (int fi = 0; fi < mesh->getFaces().size(); fi++) {
+			// Get the data for the face (each vertex, face normal, etc.)
+			FaceData face = mesh->getFaceData(fi);
+			
+			// If the face doesn't inersect with the ray's bounding box
+			if (face.getESCLCode(bb))
+				continue; // Skip
+			
+			// If the ray must travel backwards to collide with face-plane
+			double cld_t = ray.collide(face.v1.pos, face.normal);
+			if (cld_t < 0)
+				continue;
+
+			// If there was another closer collision
+			if (hasBeenACollide && cld_t > last_cld_t)
 				continue;
 			
-			// For each face
-			for (int i = 0; i < mesh->getFaces().size(); i++) {
-				FaceData face = mesh->getFaceData(i);
-				
-				// If the face doesn't inersect with the ray's bounding box
-				if (face.getESCLCode(bb))
-					continue; // Skip
-				
-				// If the ray must travel backwards to collide with face-plane
-				double cld_t = ray.collide(face.v1.pos, face.normal);
-				if (cld_t < 0)
-					continue;
+			// Get barycentric coordinates of collision
+			Vec3d pos = ray.posFromT(cld_t);
+			Vec3d bary = bary3D(pos, face.v0.pos, face.v1.pos, face.v2.pos, face.normal);
+			
+			// If did not colide
+			if (!isInside(bary))
+				continue; // Skip to next face
 
-				// If there was another closer collision
-				if (hasBeenACollide && cld_t > last_cld_t)
-					continue;
+			last_cld_t = cld_t;
+			
+			Vertd current_vert = face.interpolateFaceBary(bary, false);
+			current_vert.pos = pos;
 				
-				// Get barycentric coordinates of collision
-				Vec3d pos = ray.posFromT(cld_t);
-				Vec3d bary = bary3D(pos, face.v0.pos, face.v1.pos, face.v2.pos, face.normal);
-				
-				// If did not colide
-				if (!isInside(bary))
-					continue; // Skip to next face
 
-				last_cld_t = cld_t;
-				
-				Vertd current_vert = face.interpolateFaceBary(bary, false);
-				current_vert.pos = pos;
-
-				last_vert = current_vert;
-				hasBeenACollide = true;
-			}
+			last_vert = current_vert;
+			hasBeenACollide = true;
 		}
 	}
 
-	// // Clipping
-	// float color_clip = 2.0f;
-	// for (int i = 0; i < 3; i++) {
-	// 	color[i] = std::max(0.0f, color[i]);
-	// 	color[i] = color[i] / (color_clip + color[i]);
-	// }
+	
 	col_vert = last_vert;
 	return hasBeenACollide;
 }
