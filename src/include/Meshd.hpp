@@ -55,6 +55,14 @@ namespace potato {
     struct FaceData {
         Vertd v0, v1, v2;
         Vec3d normal;
+
+        int getESCLCode(BoundBoxd bb) {
+            return (
+                bb.getECSLCode(v0.pos) &
+                bb.getECSLCode(v1.pos) &
+                bb.getECSLCode(v2.pos)
+            );
+        };
     };
     
     struct Faced { 

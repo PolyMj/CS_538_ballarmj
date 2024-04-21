@@ -94,7 +94,8 @@ void PotatoRenderEngine::drawingLoop() {
         renderToDrawBuffer(drawBuffer); 
  
         // Swap buffers 
-        swapBuffers(); 
+        if (this->USE_DOUBLE_BUFFERING)
+            swapBuffers(); 
  
         // Get wait time 
         double waitTime = timekeeper.endFrame(); 

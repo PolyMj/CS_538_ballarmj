@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mesh.hpp"
+#include "Vector.hpp"
 
 namespace potato {
 	#define BIT_LEFT 1
@@ -10,5 +10,7 @@ namespace potato {
 	#define BIT_NEAR 16
 	#define BIT_FAR 32
 
-	int getExtendedCohenSutherlandCode(Vec4f v, float left, float right, float bottom, float top, float near, float far);
+	int getExtendedCohenSutherlandCode(Vec4<float> v, float left, float right, float bottom, float top, float near, float far);
+
+	int getExtendedCohenSutherlandCode(Vec3d v, double left, double right, double bottom, double top, double near, double far);
 }

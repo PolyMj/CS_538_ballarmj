@@ -386,7 +386,7 @@ namespace potato {
 
         
     inline void printV3(Vec3f v, bool endline = true) {
-        cout << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-        if (endline) cout << endl;
-    }
+        // cout << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+        // if (endline) cout << endl;
+    };
 }; 

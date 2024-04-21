@@ -12,7 +12,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 
 	PolyMeshd *model = new PolyMeshd();
 	model = loadOBJTriangleMesh("sampleModels/teapot.obj");
-	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(1.5, -1.5, -20.0, 1.0)));
+	model->transform(Mat4d(X_AXIS*0.3, Y_AXIS*0.3, Z_AXIS*0.3, Vec4d(0.4, -0.3, -0.8, 1.0)));
 	model->debugRecolor();
 	meshes.push_back(model);
 }
@@ -65,38 +65,56 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 			// Break
 
 	Vertd last_vert;
+	double last_cld_t = -1;
 	bool hasBeenACollide = false;
 
 	for (int i = 0; i < meshes.size(); i++) {
 		PolyMeshd *mesh = meshes.at(i);
 		
-		if (ray.intersectsBBox(mesh->getBB())) {
+		double t1, t2;
+		if (ray.intersectsBBox(mesh->getBB(), t1, t2)) {
+			BoundBoxd bb = BoundBoxd(ray.posFromT(t1), ray.posFromT(t2));
+
+			// If the closest possible collision is still further than another found collision
+			if (hasBeenACollide && min(t1, t2) > last_cld_t)
+				continue;
+
 			last_vert.color = HIT_BB_COLOR; // For debugging
+			
+			// For each face
 			for (int i = 0; i < mesh->getFaces().size(); i++) {
 				FaceData face = mesh->getFaceData(i);
 				
+				// If the face doesn't inersect with the ray's bounding box
+				if (face.getESCLCode(bb))
+					continue; // Skip
+				
+				// If the ray must travel backwards to collide with face-plane
 				double cld_t = ray.collide(face.v1.pos, face.normal);
-				if (cld_t >= 0) {
-					Vec3d pos = ray.posFromT(cld_t);
-					Vec3d bary = bary3D(pos, face.v0.pos, face.v1.pos, face.v2.pos, face.normal);
-					if (isInside(bary)) {
-						Vertd current_vert;
-						current_vert.color = interpolateBary(bary, face.v0.color, face.v1.color, face.v2.color);
-						current_vert.pos = interpolateBary(bary, face.v0.pos, face.v1.pos, face.v2.pos);
-						current_vert.normal = face.normal;
+				if (cld_t < 0)
+					continue;
 
-						if (hasBeenACollide) {
-							// Store closer one in last vert
-							if (last_vert.pos.z > current_vert.pos.z) {
-								last_vert = current_vert;
-							}
-						}
-						else {
-							last_vert = current_vert;
-							hasBeenACollide = true;
-						}
-					}
-				}
+				// If there was another closer collision
+				if (hasBeenACollide && cld_t > last_cld_t)
+					continue;
+				
+				// Get barycentric coordinates of collision
+				Vec3d pos = ray.posFromT(cld_t);
+				Vec3d bary = bary3D(pos, face.v0.pos, face.v1.pos, face.v2.pos, face.normal);
+				
+				// If did not colide
+				if (!isInside(bary))
+					continue; // Skip to next face
+
+				last_cld_t = cld_t;
+				
+				Vertd current_vert;
+				current_vert.color = interpolateBary(bary, face.v0.color, face.v1.color, face.v2.color);
+				current_vert.pos = interpolateBary(bary, face.v0.pos, face.v1.pos, face.v2.pos);
+				current_vert.normal = face.normal;
+
+				last_vert = current_vert;
+				hasBeenACollide = true;
 			}
 		}
 	}

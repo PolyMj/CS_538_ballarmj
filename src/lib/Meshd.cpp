@@ -33,7 +33,7 @@ namespace potato {
         } 
     }; 
 
-    PolyMeshd* loadOBJTriangleMesh(string filename, Vec4d diff_color) {
+    PolyMeshd* loadOBJTriangleMesh(string filename) {
 		PolyMeshd *pm = new PolyMeshd();
 		
 		// Open .obj file
@@ -56,7 +56,6 @@ namespace potato {
 				Vertd v = Vertd();
 				try {
 					line_stream >> v.pos.x >> v.pos.y >> v.pos.z;
-					v.color = diff_color;
 				}
 				catch (exception e) {
 					cerr << "WARNING in loadOBJModel: Vertex coordinates were improperly loaded: " 

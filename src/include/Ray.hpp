@@ -67,7 +67,7 @@ namespace potato {
 			return (point-start).dot(normal) / vdn;
 		};
 
-		bool intersectsBBox(BoundBoxd bb) {
+		bool intersectsBBox(BoundBoxd bb, double &t1, double &t2) {
 			// For each side:
 				// Get intersection point
 					// t = distance / direction.axis {direction.axis != 0}
@@ -76,20 +76,29 @@ namespace potato {
 
 			Vec3d intersect;
 			double t;
+			bool foundIntersection = false;
 			// Check each Z plane
 			if (abs(direction.z) >= BASICALLY_ZERO) {
 				t = (bb.start.z-start.z) / direction.z;
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(0, 1, intersect[0], intersect[1])) {
-						return true;
+						t1 = t;
+						foundIntersection = true;
 					}
 				}
 				t = (bb.end.z-start.z) / direction.z;
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(0, 1, intersect[0], intersect[1])) {
-						return true;
+						if (foundIntersection) {
+							t2 = t;
+							return true;
+						}
+						else {
+							t1 = t;
+							foundIntersection = true;
+						}
 					}
 				}
 			}
@@ -99,14 +108,28 @@ namespace potato {
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(0, 2, intersect[0], intersect[2])) {
-						return true;
+						if (foundIntersection) {
+							t2 = t;
+							return true;
+						}
+						else {
+							t1 = t;
+							foundIntersection = true;
+						}
 					}
 				}
 				t = (bb.end.y-start.y) / direction.y;
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(0, 2, intersect[0], intersect[2])) {
-						return true;
+						if (foundIntersection) {
+							t2 = t;
+							return true;
+						}
+						else {
+							t1 = t;
+							foundIntersection = true;
+						}
 					}
 				}
 			}
@@ -116,19 +139,42 @@ namespace potato {
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(1, 2, intersect[1], intersect[2])) {
-						return true;
+						if (foundIntersection) {
+							t2 = t;
+							return true;
+						}
+						else {
+							t1 = t;
+							foundIntersection = true;
+						}
 					}
 				}
 				t = (bb.end.x-start.x) / direction.x;
 				if (t > 0) {
 					intersect = posFromT(t);
 					if (bb.bounds2D(1, 2, intersect[1], intersect[2])) {
-						return true;
+						if (foundIntersection) {
+							t2 = t;
+							return true;
+						}
+						else {
+							t1 = t;
+							foundIntersection = true;
+						}
 					}
 				}
 			}
-			// If no intersections found
-			return false;
+			
+			// If only one insersection was found (somehow)
+			if (foundIntersection) {
+				t2 = -1.0;
+				return true;
+			}
+			else {
+				t1 = -1.0;
+				t2 = -1.0;
+				return false;
+			}
 		}
 	};
 }
