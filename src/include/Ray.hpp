@@ -3,7 +3,7 @@
 #include "Vector.hpp"
 #include "Settings.hpp" // For near plane and fov (VIEW_HEIGHT)
 
-#define ZERO_VEC3 Vec3f(0.0f, 0.0f, 0.0f)
+#define ZERO_VEC3 Vec3d(0.0f, 0.0f, 0.0f)
 #define BASICALLY_ZERO 0.00001
 
 namespace potato {

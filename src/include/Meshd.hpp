@@ -3,9 +3,13 @@
 #define _USE_MATH_DEFINES 
 #include <cmath> 
 #include <vector> 
-#include <iostream> 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "Vector.hpp"  
 #include "BoundBox.hpp"
+#include "Matrix.hpp"
 using namespace std; 
  
 namespace potato { 
@@ -48,6 +52,11 @@ namespace potato {
         }; 
     }; 
  
+    struct FaceData {
+        Vertd v0, v1, v2;
+        Vec3d normal;
+    };
+    
     struct Faced { 
         vector<unsigned int> indices {}; 
         Vec3d normal;
@@ -77,6 +86,16 @@ namespace potato {
             }
         };
 
+        FaceData getFaceData(int findex) {
+            Faced f = faces.at(findex);
+            return FaceData {
+                vertices.at(f.indices.at(0)),
+                vertices.at(f.indices.at(1)),
+                vertices.at(f.indices.at(2)),
+                f.normal
+            };
+        };
+
         void computeNormal(Faced &face) {
             Vertd v0 = vertices.at(face.indices.at(0));
             Vertd v1 = vertices.at(face.indices.at(1));
@@ -85,7 +104,7 @@ namespace potato {
             Vec3d AB = v1.pos - v0.pos;
             Vec3d AC = v2.pos - v0.pos;
             face.normal = AB.cross(AC).normalize();
-        }
+        };
 
         void addTriangleFace(int A, int B, int C) {
             Faced face = Faced();
@@ -94,7 +113,7 @@ namespace potato {
             face.indices.push_back(C);
             computeNormal(face);
             faces.push_back(face);
-        }
+        };
 
         void addTriangleFace(Vertd A, Vertd B, Vertd C) {
             int starti = vertices.size();
@@ -108,7 +127,7 @@ namespace potato {
             }
             computeNormal(face);
             faces.push_back(face);
-        }
+        };
 
         void computeBounds() {
             if (vertices.size() <= 0) return;
@@ -120,7 +139,16 @@ namespace potato {
                 bb.start = minV(bb.start, v);
                 bb.end = maxV(bb.end, v);
             }
-        }
+        };
+
+        void transform(Mat4d mat) {
+            for (int i = 0; i < vertices.size(); i++) {
+                Vertd v = vertices.at(i);
+                vertices.at(i).pos = Vec3d(mat * Vec4d(v.pos, 1.0f));
+            }
+            computeNormals(); // Could use a normal transform but this is easier for now
+            computeBounds();
+        };
     }; 
  
     // Compute bounds for single face 
@@ -128,4 +156,7 @@ namespace potato {
  
     // Compute bounds for ENTIRE mesh 
     void computeBounds(PolyMeshd *mesh, BoundBoxd &box, bool startBox=true); 
+
+    // Load a .obj model
+    PolyMeshd* loadOBJTriangleMesh(string filename, Vec4d diff_color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f));
 }; 

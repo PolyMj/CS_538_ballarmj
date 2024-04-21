@@ -120,6 +120,7 @@ namespace potato {
     }; 
  
     using Mat4f = Mat4<float>; 
+    using Mat4d = Mat4<double>;
  
     /////////////////////////////////////////////////////////////////////////// 
     // MAT3 

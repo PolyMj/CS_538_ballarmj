@@ -4,13 +4,14 @@
 #include "Rasterize.hpp" 
 #include "Meshd.hpp"
 #include "Matrix.hpp"
-// #include "Clipping.hpp"
 #include "Ray.hpp"
+// Note: Ensure that you use the correct structs/classes.
+// Most of the files in this project were made for other programs and use floats instead of doubles. 
 using namespace std; 
 using namespace potato; 
 using namespace tinyxml2; 
 
-#define ROWS_PER_THREAD 20
+#define THREAD_COUNT 2
  
 class PotatoRaytracerEngine : public PotatoRenderEngine { 
     private: 
@@ -29,7 +30,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
 
         Vec3f PotatoRaytracerEngine::raycast(Ray ray);
-        void PotatoRaytracerEngine::drawRows(Image<Vec3f> *drawBuffer, int start_y, int count);
+        void PotatoRaytracerEngine::drawForThread(Image<Vec3f> *drawBuffer, unsigned int y_offset);
  
     public: 
         PotatoRaytracerEngine(int windowWidth, int windowHeight); 
