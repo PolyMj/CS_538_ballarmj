@@ -78,7 +78,8 @@ namespace potato {
                 interp.normal = normal;
             
             // Will need to add specular & diffuse later
-            interp.color = interpolateBary(bary, v0.color, v1.color, v2.color);
+            interp.diffuse = interpolateBary(bary, v0.diffuse, v1.diffuse, v2.diffuse);
+            interp.specular = interpolateBary(bary, v0.specular, v1.specular, v2.specular);
 
             return interp;
         };
@@ -204,9 +205,11 @@ namespace potato {
             computeBounds();
         };
 
-        void uniformRecolor(Vec3d color) {
+        void uniformRecolor(Vec3d color, double specular_ratio = 1.0) {
+            double diffuse_ratio = (1.0-specular_ratio);
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.at(i).color = color;
+                vertices.at(i).specular = color * specular_ratio;
+                vertices.at(i).diffuse = color * diffuse_ratio;
             }
         };
 

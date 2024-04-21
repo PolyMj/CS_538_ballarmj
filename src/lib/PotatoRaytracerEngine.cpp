@@ -8,23 +8,22 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	
-	
 	// I think the matrix multiplication is implemented incorrectly
 	// I need to take the transpose of whatever I do for it do work
 	// Will fix later
-	Mat4d modelMat = (translate<double>(2.4, -3.0, -19) * uniformScale(1.4)).transpose();
+
+	Mat4d modelMat = (translate<double>(2.4, -3.0, -19) * uniformScale(2.0)).transpose();
 	PolyMeshd *tp1 = new PolyMeshd();
 	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
 	tp1->blendNormals = true;
 	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.5));
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 0.0);
 	meshes.push_back(tp1);
 
-	modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(2.5)).transpose();
+	modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0)).transpose();
 	PolyMeshd *tp2 = new PolyMeshd();
-	tp2 = loadOBJTriangleMesh("sampleModels/teapot.obj");
-	tp2->blendNormals = true;
+	tp2 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	tp2->blendNormals = false;
 	tp2->transform(modelMat);
 	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
 	meshes.push_back(tp2);
@@ -42,7 +41,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m1->blendNormals = false;
 	m1->transform(modelMat);
-	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
+	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0), 0.65);
 	meshes.push_back(m1);
 
 	modelMat =  (translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1)).transpose();
@@ -97,7 +96,8 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	Vertd col_vert;
 	for (int i = 0; i < MAX_BOUNCES; i++) {
 		if (collideRay(ray, col_vert)) {
-			ray.reflectSelf(col_vert);
+			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
+			ray.reflectSelf(col_vert, diffuse_scalar);
 		}
 		else {
 			break;
@@ -105,8 +105,8 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	}
 	
 	// Scale the light based on direction of light "source"
-	double scalar = (1.0 + MIN_SKY_LIGHT + ray.direction.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
-	return Vec3f(ray.color * scalar);
+	double spec_scalar = (1.0 + MIN_SKY_LIGHT + ray.direction.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
+	return Vec3f(ray.specular*spec_scalar + ray.diffuse);
 }
 
 
