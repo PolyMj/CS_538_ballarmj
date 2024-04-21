@@ -10,6 +10,8 @@
 #include "Vector.hpp"  
 #include "BoundBox.hpp"
 #include "Matrix.hpp"
+#include "Bary.hpp"
+#include "Settings.hpp"
 using namespace std; 
  
 namespace potato { 
@@ -18,8 +20,8 @@ namespace potato {
         Vec3d pos {}; 
         // Union is used because several other programs refer to this attribute as "color",
         // but I specifically want diffuse color
-        union {Vec4d color {}, diffuse; }; // [0,1] 
-        Vec4d specular;
+        union {Vec3d color {}, diffuse; }; // [0,1] 
+        Vec3d specular;
         Vec3d normal;
 
  
@@ -55,6 +57,7 @@ namespace potato {
     struct FaceData {
         Vertd v0, v1, v2;
         Vec3d normal;
+        bool interp_normals = true;
 
         int getESCLCode(BoundBoxd bb) {
             return (
@@ -62,6 +65,22 @@ namespace potato {
                 bb.getECSLCode(v1.pos) &
                 bb.getECSLCode(v2.pos)
             );
+        };
+
+        Vertd interpolateFaceBary(Vec3d bary, bool interp_pos = true) {
+            Vertd interp;
+            if (interp_pos) interp.pos = interpolateBary(bary, v0.pos, v1.pos, v2.pos);
+            
+            // Decide wether to use face normal or interpolated normal
+            if (interp_normals)
+                interp.normal = interpolateBary(bary, v0.normal, v1.normal, v2.normal);
+            else
+                interp.normal = normal;
+            
+            // Will need to add specular & diffuse later
+            interp.color = interpolateBary(bary, v0.color, v1.color, v2.color);
+
+            return interp;
         };
     };
     
@@ -75,7 +94,10 @@ namespace potato {
         vector<Vertd> vertices {}; 
         vector<Faced> faces {}; 
         BoundBoxd bb;
+
     public: 
+        bool blendNormals = true;
+
         PolyMeshd() {}; 
         PolyMeshd(PolyMeshd *pm) {
             vertices = vector<Vertd>(pm->vertices);
@@ -87,31 +109,50 @@ namespace potato {
         vector<Faced>& getFaces() { return faces; }; 
         BoundBoxd getBB() { return bb; };
 
-        // Only sets face normals, not vertices
-        void computeNormals() {
-            for (int i = 0; i < faces.size(); i++) {
-                computeNormal(faces[i]);
-            }
-        };
-
         FaceData getFaceData(int findex) {
             Faced f = faces.at(findex);
             return FaceData {
                 vertices.at(f.indices.at(0)),
                 vertices.at(f.indices.at(1)),
                 vertices.at(f.indices.at(2)),
-                f.normal
+                f.normal,
+                blendNormals
             };
         };
 
+        // Only sets face normals, not vertices
+        void computeNormals() {
+            // Reset vertex normals
+            if (blendNormals) {
+                for (int i = 0; i < vertices.size(); i++) {
+                    vertices.at(i).normal = Vec3d(0,0,0);
+                }
+            }
+            
+            // Compute face normals and add them to each adjacent vertex
+            for (int i = 0; i < faces.size(); i++) {
+                computeNormal(faces[i]);
+            }
+
+            // Renormalize vertex normals
+            if (blendNormals) {
+                for (int i = 0; i < vertices.size(); i++) {
+                    vertices.at(i).normal = vertices.at(i).normal.normalize();
+                }
+            }
+        };
+
         void computeNormal(Faced &face) {
-            Vertd v0 = vertices.at(face.indices.at(0));
-            Vertd v1 = vertices.at(face.indices.at(1));
-            Vertd v2 = vertices.at(face.indices.at(2));
+            Vertd& v0 = vertices.at(face.indices.at(0));
+            Vertd& v1 = vertices.at(face.indices.at(1));
+            Vertd& v2 = vertices.at(face.indices.at(2));
 
             Vec3d AB = v1.pos - v0.pos;
             Vec3d AC = v2.pos - v0.pos;
             face.normal = AB.cross(AC).normalize();
+            v0.normal = v0.normal + face.normal;
+            v1.normal = v1.normal + face.normal;
+            v2.normal = v2.normal + face.normal;
         };
 
         void addTriangleFace(int A, int B, int C) {
@@ -147,18 +188,23 @@ namespace potato {
                 bb.start = minV(bb.start, v);
                 bb.end = maxV(bb.end, v);
             }
+
+            Vec3d offset = (bb.end-bb.start) * BASICALLY_ZERO;
+            bb.end = bb.end + offset;
+            bb.start = bb.start - offset;
         };
 
         void transform(Mat4d mat) {
             for (int i = 0; i < vertices.size(); i++) {
-                Vertd v = vertices.at(i);
-                vertices.at(i).pos = Vec3d(mat * Vec4d(v.pos, 1.0f));
+                Vertd& v = vertices.at(i);
+                Vec4d pos = mat * Vec4d(v.pos, 1.0f);
+                v.pos = Vec3d(pos) / pos.w;
             }
             computeNormals(); // Could use a normal transform but this is easier for now
             computeBounds();
         };
 
-        void unifornRecolor(Vec4d color) {
+        void uniformRecolor(Vec3d color) {
             for (int i = 0; i < vertices.size(); i++) {
                 vertices.at(i).color = color;
             }
@@ -167,11 +213,10 @@ namespace potato {
         void debugRecolor() {
             for (int i = 0; i < vertices.size(); i++) {
                 Vec3d pos = vertices.at(i).pos;
-                vertices.at(i).color = Vec4d(
+                vertices.at(i).color = Vec3d(
                     abs(pos.x) / (abs(pos.x) + 1),
                     abs(pos.y) / (abs(pos.y) + 1),
-                    abs(pos.z) / (abs(pos.z) + 1),
-                    1.0
+                    abs(pos.z) / (abs(pos.z) + 1)
                 );
             }
         };

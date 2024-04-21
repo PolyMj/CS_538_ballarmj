@@ -28,11 +28,15 @@ void printRay(Ray ray, string name = "Ray") {
 	cout << endl;
 }
 
+void printMat4(Mat4d mat) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			cout << mat.cols[j][i] << ", ";
+		}
+		cout << endl;
+	}
+}
+
 int main() {
-	Ray original = Ray(Vec3f(-1.5, -1.3, -1.2));
-
-	Ray reflection = original.reflect(Vec3f(0.0f,0.0f,0.0f), Vec3f(-1.0f, -1.0f, -1.0f));
-
-	printRay(original, "Original");
-	printRay(reflection, "Reflection");
+	
 }

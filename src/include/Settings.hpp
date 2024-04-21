@@ -2,6 +2,8 @@
  
 // Comment to turn off testing 
 #define ENABLE_TESTING 
+
+#define BASICALLY_ZERO 0.0001
  
 // Set target FPS 
 #define TARGET_FPS      60 

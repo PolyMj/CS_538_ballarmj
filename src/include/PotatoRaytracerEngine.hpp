@@ -10,6 +10,8 @@
 using namespace std; 
 using namespace potato; 
 using namespace tinyxml2; 
+
+#define MIN_SKY_LIGHT 0.5
  
 class PotatoRaytracerEngine : public PotatoRenderEngine { 
     private: 
@@ -18,8 +20,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         vector<Fragment> allFragments; 
         vector<PolyMesh*> renderMeshes {};
 
-        Vec4f cameraPos = Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
-        Vec4f cameraLookat = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vec3d lightDirection = Vec3d(0.3, 1.0, 0.7).normalize();
 
         vector<PolyMeshd*> meshes;
 
@@ -27,6 +28,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
 
         Vec3f PotatoRaytracerEngine::raycast(Ray ray);
+        bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert);
  
     public: 
         PotatoRaytracerEngine(int windowWidth, int windowHeight); 

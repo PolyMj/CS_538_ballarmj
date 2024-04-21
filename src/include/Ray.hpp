@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Vector.hpp"
+#include "Meshd.hpp"
 #include "Settings.hpp" // For near plane and fov (VIEW_HEIGHT)
 
 #define ZERO_VEC3 Vec3d(0.0f, 0.0f, 0.0f)
-#define BASICALLY_ZERO 0.00001
 
 namespace potato {
 	struct Ray {
 		Vec3d start;
 		Vec3d direction;
-		Vec3d color = Vec3d(1.0f, 1.0f, 1.0f);
+		Vec3d color = Vec3d(1.0, 1.0, 1.0);
 
 
 		// Basic constructors
@@ -43,12 +43,20 @@ namespace potato {
 
 
 		// Returns the reflection of the current ray off of the face defined by the given normal
-		Ray reflect(Vec3d point, Vec3d normal) {
+		Ray reflect(Vertd v) {
 			Ray ray = Ray();
-			ray.direction = direction - normal * (direction.dot(normal)/normal.dot(normal)) * 2;
-			ray.start = point;
+			ray.direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
+			ray.start = v.pos + ray.direction * BASICALLY_ZERO;
 			ray.color = color;
 			return ray;
+		};
+
+		// Modifies itself to become a new reflection ray
+		void reflectSelf(Vertd v) {
+			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
+			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
+			start = v.pos + direction * BASICALLY_ZERO;
+			color = color * v.color;
 		};
 
 		// Return positiong of ray at parameter T

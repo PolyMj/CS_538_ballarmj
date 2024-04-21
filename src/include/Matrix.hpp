@@ -118,6 +118,31 @@ namespace potato {
             }; 
         }; 
     }; 
+
+    template<typename T>
+    inline Mat4<T> translate(T x, T y, T z) {
+        return Mat4<T>(
+            Vec4<T>(1.0, 0.0, 0.0, 0.0),
+            Vec4<T>(0.0, 1.0, 0.0, 0.0),
+            Vec4<T>(0.0, 0.0, 1.0, 0.0),
+            Vec4<T>(  x,   y,   z, 1.0)
+        );
+    };
+
+    template<typename T>
+    inline Mat4<T> uniformScale(T s) {
+        return scale(s, s, s);
+    };
+
+    template<typename T>
+    inline Mat4<T> scale(T x, T y, T z) {
+        return Mat4<T>(
+            Vec4<T>(  x, 0.0, 0.0, 0.0),
+            Vec4<T>(0.0,   y, 0.0, 0.0),
+            Vec4<T>(0.0, 0.0,   z, 0.0),
+            Vec4<T>(0.0, 0.0, 0.0, 1.0)
+        );
+    };
  
     using Mat4f = Mat4<float>; 
     using Mat4d = Mat4<double>;
