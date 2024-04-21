@@ -13,31 +13,29 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	// I think the matrix multiplication is implemented incorrectly
 	// I need to take the transpose of whatever I do for it do work
 	// Will fix later
-	Mat4d modelMat = (translate<double>(2.4, -3.0, -19) * uniformScale(0.9)).transpose();
+	Mat4d modelMat = (translate<double>(2.4, -3.0, -19) * uniformScale(1.4)).transpose();
+	PolyMeshd *tp1 = new PolyMeshd();
+	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	tp1->blendNormals = true;
+	tp1->transform(modelMat);
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.5));
+	meshes.push_back(tp1);
+
+	modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(2.5)).transpose();
+	PolyMeshd *tp2 = new PolyMeshd();
+	tp2 = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	tp2->blendNormals = true;
+	tp2->transform(modelMat);
+	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
+	meshes.push_back(tp2);
+
+	modelMat = (translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8)).transpose();
 	PolyMeshd *c1 = new PolyMeshd();
 	c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	c1->blendNormals = false;
 	c1->transform(modelMat);
-	c1->uniformRecolor(Vec3d(1.0, 0.5, 0.5));
+	c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
 	meshes.push_back(c1);
-
-	modelMat = (translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8)).transpose();
-	PolyMeshd *c2 = new PolyMeshd();
-	c2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	c2->blendNormals = false;
-	c2->transform(modelMat);
-	c2->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
-	meshes.push_back(c2);
-
-
-	modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.8)).transpose();
-	PolyMeshd *tp = new PolyMeshd();
-	tp = loadOBJTriangleMesh("sampleModels/cube.obj");
-	tp->blendNormals = false;
-	tp->transform(modelMat);
-	tp->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
-	meshes.push_back(tp);
-
 
 	modelMat =  (translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0)).transpose();
 	PolyMeshd *m1 = new PolyMeshd();
