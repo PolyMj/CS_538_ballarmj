@@ -40,3 +40,7 @@
 #define MAX_BOUNCES 10
 #define NEAR_PLANE 0.1f
 #define VIEW_HEIGHT NEAR_PLANE
+
+#define VSYNC false
+#define DOUBLE_BUFFERING false
+#define CLEAR_DRAW_BUFFER_PER_FRAME false

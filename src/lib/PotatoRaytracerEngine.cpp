@@ -29,7 +29,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 
 	PolyMeshd *model = new PolyMeshd();
 	model = loadOBJTriangleMesh("sampleModels/teapot.obj");
-	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(3.0, -2.0, -10.0, 1.0)));
+	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(1.5, -1.5, -4.0, 1.0)));
 	meshes.push_back(model);
 }
 
