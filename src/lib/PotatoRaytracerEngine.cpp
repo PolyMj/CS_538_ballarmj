@@ -1,46 +1,36 @@
 #include "PotatoRaytracerEngine.hpp"
 
+#define HIT_BB_COLOR Vec4d(0.1f, 0.1f, 0.1f, 1.0f)
+#define X_AXIS Vec4d(1.0f, 0.0f, 0.0f, 0.0f)
+#define Y_AXIS Vec4d(0.0f, 1.0f, 0.0f, 0.0f)
+#define Z_AXIS Vec4d(0.0f, 0.0f, 1.0f, 0.0f)
+#define W_AXIS Vec4d(0.0f, 0.0f, 0.0f, 1.0f)
+
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	Triangle tri;
-	double Z = -2.4f;
-	tri.A.pos = Vec3d(-1.5f, -1.0f, Z);
-	tri.B.pos = Vec3d(1.5f, -1.0f, Z);
-	tri.C.pos = Vec3d(1.5f, 1.0f, Z);
-	tri.computeNormal();
+	double Z = -3.6f;
+	// // PolyMesh
+	// PolyMeshd *mesh = new PolyMeshd();
+	// Vertd v1 = Vertd();
+	// v1.pos = Vec3d(0.4f, -0.5f, Z*2);
+	// v1.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
+	// Vertd v2 = Vertd();
+	// v2.pos = Vec3d(2.0f, -1.0f, Z);
+	// v2.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
+	// Vertd v3 = Vertd();
+	// v3.pos = Vec3d(2.0f, 1.0f, Z);
+	// v3.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
 
-	tri.A.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
-	tri.B.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
-	tri.C.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
-	trilist.push_back(tri);
-
-	Triangle tri2;
-	tri2.A.pos = Vec3d(-1.7f, -1.0f, Z-0.1);
-	tri2.B.pos = Vec3d(1.5f, -1.0f, Z+0.1);
-	tri2.C.pos = Vec3d(1.5f, 1.2f, Z+0.3);
-	tri2.computeNormal();
-
-	tri2.A.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	tri2.B.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	tri2.C.color = Vec4d(1.0f, 1.0f, 1.0f, 1.0f);
-	trilist.push_back(tri2);
+	// mesh->addTriangleFace(v1, v2, v3);
+	// mesh->computeBounds();
+	// mesh->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(0.0, 0.0, -3.0, 1.0)));
+	// meshes.push_back(mesh);
 
 
-	// PolyMesh
-	PolyMeshd *mesh = new PolyMeshd();
-	Vertd v1 = Vertd();
-	v1.pos = Vec3d(-1.5f, -1.0f, Z);
-	v1.color = Vec4d(0.0f, 1.0f, 1.0f, 1.0f);
-	Vertd v2 = Vertd();
-	v2.pos = Vec3d(1.5f, -1.0f, Z);
-	v2.color = Vec4d(1.0f, 0.0f, 1.0f, 1.0f);
-	Vertd v3 = Vertd();
-	v3.pos = Vec3d(1.5f, 1.0f, Z);
-	v3.color = Vec4d(1.0f, 1.0f, 0.0f, 1.0f);
-
-	mesh->addTriangleFace(v1, v2, v3);
-	mesh->computeBounds();
-	meshes.push_back(mesh);
+	PolyMeshd *model = new PolyMeshd();
+	model = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	model->transform(Mat4d(X_AXIS, Y_AXIS, Z_AXIS, Vec4d(3.0, -2.0, -10.0, 1.0)));
+	meshes.push_back(model);
 }
 
 // Delete/clear all data
@@ -72,7 +62,6 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	// For each ray starting from camera
 		// raycast()
-	drawBuffer->clear();
 	for (int x = 0; x < windowWidth; x++) {
 		Ray ray;
 		for (int y = 0; y < windowHeight; y++) {
@@ -84,7 +73,6 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 
 // Returns the color from the given raycast
 Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
-	Vec3f color;
 	// Repeat [MAX_BOUNCES] times
 		// If ray collides with an object
 			// Ray is now its reflection { ray.reflect(normal) }
@@ -99,20 +87,18 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		PolyMeshd *mesh = meshes.at(i);
 		
 		if (ray.intersectsBBox(mesh->getBB())) {
+			last_vert.color = HIT_BB_COLOR; // For debugging
 			for (int i = 0; i < mesh->getFaces().size(); i++) {
-				Faced face = mesh->getFaces().at(i);
-				Vertd v0 = mesh->getVertices().at(face.indices.at(0));
-				Vertd v1 = mesh->getVertices().at(face.indices.at(1));
-				Vertd v2 = mesh->getVertices().at(face.indices.at(2));
+				FaceData face = mesh->getFaceData(i);
 				
-				double cld_t = ray.collide(v1.pos, face.normal);
+				double cld_t = ray.collide(face.v1.pos, face.normal);
 				if (cld_t >= 0) {
 					Vec3d pos = ray.posFromT(cld_t);
-					Vec3d bary = bary3D(pos, v0.pos, v1.pos, v2.pos, face.normal);
+					Vec3d bary = bary3D(pos, face.v0.pos, face.v1.pos, face.v2.pos, face.normal);
 					if (isInside(bary)) {
 						Vertd current_vert;
-						current_vert.color = interpolateBary(bary, v0.color, v1.color, v2.color);
-						current_vert.pos = interpolateBary(bary, v0.pos, v1.pos, v2.pos);
+						current_vert.color = interpolateBary(bary, face.v0.color, face.v1.color, face.v2.color);
+						current_vert.pos = interpolateBary(bary, face.v0.pos, face.v1.pos, face.v2.pos);
 						current_vert.normal = face.normal;
 
 						if (hasBeenACollide) {
@@ -138,5 +124,5 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	// 	color[i] = color[i] / (color_clip + color[i]);
 	// }
 
-	return last_vert.color;
+	return Vec3f(last_vert.color);
 }

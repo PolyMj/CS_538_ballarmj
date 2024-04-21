@@ -33,7 +33,7 @@ namespace potato {
             c2 = end.x*start.y; 
         }; 
  
-        float eval(float x, float y) { 
+        double eval(double x, double y) { 
            return -dy*x + dx*y + c1 - c2; 
         }; 
     }; 

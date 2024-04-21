@@ -35,7 +35,7 @@ class PotatoRenderEngine {
         thread *drawThread = 0; 
         bool drawThreadRunning = false; 
         mutex frontBufferMutex; 
-        bool USE_VSYNC = true; 
+        bool USE_VSYNC = false; 
  
         // Timing stuff 
         Timekeeper timekeeper; 

@@ -4,25 +4,12 @@
 #include "Rasterize.hpp" 
 #include "Meshd.hpp"
 #include "Matrix.hpp"
-// #include "Clipping.hpp"
 #include "Ray.hpp"
+// Note: Ensure that you use the correct structs/classes.
+// Most of the files in this project were made for other programs and use floats instead of doubles. 
 using namespace std; 
 using namespace potato; 
 using namespace tinyxml2; 
-
-// Temporary, just for getting things started
-struct Triangle {
-	Vertd A;
-	Vertd B;
-	Vertd C;
-	Vec3d normal;
-
-	void computeNormal() {
-		Vec3d AB = B.pos - A.pos;
-		Vec3d AC = C.pos - A.pos;
-		normal = AB.cross(AC).normalize();
-	}
-};
  
 class PotatoRaytracerEngine : public PotatoRenderEngine { 
     private: 
@@ -34,7 +21,6 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         Vec4f cameraPos = Vec4f(0.0f, 0.0f, 1.0f, 1.0f);
         Vec4f cameraLookat = Vec4f(0.0f, 0.0f, 0.0f, 1.0f);
 
-        vector<Triangle> trilist;
         vector<PolyMeshd*> meshes;
 
         void PotatoRaytracerEngine::processAllGeomtry();
