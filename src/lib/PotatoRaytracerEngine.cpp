@@ -17,40 +17,48 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
 	tp1->blendNormals = true;
 	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 0.0);
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 1.0);
 	meshes.push_back(tp1);
 
-	modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0)).transpose();
-	PolyMeshd *tp2 = new PolyMeshd();
-	tp2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	tp2->blendNormals = false;
-	tp2->transform(modelMat);
-	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
-	meshes.push_back(tp2);
+	// modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0)).transpose();
+	// PolyMeshd *tp2 = new PolyMeshd();
+	// tp2 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	// tp2->blendNormals = false;
+	// tp2->transform(modelMat);
+	// tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
+	// meshes.push_back(tp2);
 
-	modelMat = (translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8)).transpose();
-	PolyMeshd *c1 = new PolyMeshd();
-	c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	c1->blendNormals = false;
-	c1->transform(modelMat);
-	c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
-	meshes.push_back(c1);
+	// modelMat = (translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8)).transpose();
+	// PolyMeshd *c1 = new PolyMeshd();
+	// c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	// c1->blendNormals = false;
+	// c1->transform(modelMat);
+	// c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
+	// meshes.push_back(c1);
 
 	modelMat =  (translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0)).transpose();
 	PolyMeshd *m1 = new PolyMeshd();
 	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m1->blendNormals = false;
 	m1->transform(modelMat);
-	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0), 0.65);
+	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
 	meshes.push_back(m1);
 
-	modelMat =  (translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1)).transpose();
-	PolyMeshd *m2 = new PolyMeshd();
-	m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	m2->blendNormals = false;
-	m2->transform(modelMat);
-	m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	meshes.push_back(m2);
+	// modelMat =  (translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1)).transpose();
+	// PolyMeshd *m2 = new PolyMeshd();
+	// m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	// m2->blendNormals = false;
+	// m2->transform(modelMat);
+	// m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
+	// meshes.push_back(m2);
+
+	// Mat4d modelMat =  (translate<double>(-3.0, -8.0, -30) * uniformScale<double>(0.1)).transpose();
+	// PolyMeshd *lt = new PolyMeshd();
+	// lt = loadOBJTriangleMesh("sampleModels/New Hexaeder v24.obj");
+	// lt->blendNormals = false;
+	// lt->transform(modelMat);
+	// lt->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
+	// meshes.push_back(lt);
 }
 
 // Delete/clear all data
@@ -190,14 +198,20 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 			if (face.getESCLCode(bb))
 				continue; // Skip
 			
-			// If the ray must travel backwards to collide with face-plane
+			// Get the parameter of the collision with the face's plane
 			double cld_t = ray.collide(face.v1.pos, face.normal);
+
+			// If the ray must travel backwards to collide with face-plane
 			if (cld_t < 0)
-				continue;
+				continue; // Skip
 
 			// If there was another closer collision
 			if (hasBeenACollide && cld_t > last_cld_t)
-				continue;
+				continue; // Skip
+
+			// If collision with plane is not within the ray's intersection bounding box
+			if (cld_t > bb_cld.far_t || bb_cld.near_t > cld_t)
+				continue; // Skip
 			
 			// Get barycentric coordinates of collision
 			Vec3d pos = ray.posFromT(cld_t);
@@ -208,12 +222,8 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 				continue; // Skip to next face
 
 			last_cld_t = cld_t;
-			
-			Vertd current_vert = face.interpolateFaceBary(bary, false);
-			current_vert.pos = pos;
-				
-
-			last_vert = current_vert;
+			last_vert = face.interpolateFaceBary(bary, false);
+			last_vert.pos = pos;
 			hasBeenACollide = true;
 		}
 	}

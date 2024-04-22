@@ -190,9 +190,9 @@ namespace potato {
                 bb.end = maxV(bb.end, v);
             }
 
-            Vec3d offset = (bb.end-bb.start) * BASICALLY_ZERO;
-            bb.end = bb.end + offset;
-            bb.start = bb.start - offset;
+            // For cases where faces are closely aligned with a face on the bounding box
+            bb.end = bb.end + BASICALLY_ZERO;
+            bb.start = bb.start + (-BASICALLY_ZERO);
         };
 
         void transform(Mat4d mat) {
