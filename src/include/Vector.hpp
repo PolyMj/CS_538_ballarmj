@@ -334,6 +334,16 @@ namespace potato {
                 z / len 
             }; 
         }; 
+
+        template<typename U>
+        auto mix(Vec3<U> other, double second_weight) -> Vec3<decltype(T{} * U{})> {
+            double first_weight = 1.0-second_weight;
+            return {
+                (x*first_weight + other.x*second_weight),
+                (y*first_weight + other.y*second_weight),
+                (z*first_weight + other.z*second_weight)
+            };
+        }
     }; 
  
     using Vec3f = Vec3<float>; 

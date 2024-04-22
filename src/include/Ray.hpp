@@ -7,7 +7,7 @@
 
 #define ZERO_VEC3 Vec3d(0.0f, 0.0f, 0.0f)
 
-namespace potato {
+namespace potato {	
 	struct Ray {
 		Vec3d start;
 		Vec3d direction;
@@ -44,24 +44,16 @@ namespace potato {
 		};
 
 
-		// Returns the reflection of the current ray off of the face defined by the given normal
-		// This version currently unused, commented for safety
-		// Ray reflect(Vertd v) {
-		// 	Ray ray = Ray();
-		// 	ray.direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
-		// 	ray.start = v.pos + ray.direction * BASICALLY_ZERO;
-		// 	ray.specular = specular;
-		// 	return ray;
-		// };
-
-
 		// Modifies itself to become a new reflection ray
 		void reflectSelf(Vertd v, Vec3d diffuse_scalar) {
 			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
 			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
 			start = v.pos + direction * BASICALLY_ZERO;
-			diffuse = diffuse + (v.diffuse * specular * diffuse_scalar);
-			specular = specular * v.specular;
+
+			// Diffuse += (diffuse color) * (remaining light being reflected) * (non-metallicity) * (scalar)
+			diffuse = diffuse + (v.diffuse * specular * (1.0-v.metallicity) * diffuse_scalar);
+			// Specular *= (specular color) * (metallicity)
+			specular = specular * (v.specular * v.metallicity);
 		};
 
 		void reflectSelf(Vertd v, double diffuse_scalar) {

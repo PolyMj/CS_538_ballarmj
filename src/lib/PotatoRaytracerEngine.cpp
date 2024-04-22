@@ -17,7 +17,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
 	tp1->blendNormals = true;
 	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 1.0);
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 0.5);
 	meshes.push_back(tp1);
 
 	// modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0)).transpose();
@@ -41,7 +41,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m1->blendNormals = false;
 	m1->transform(modelMat);
-	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
+	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0), Vec3d(1.0, 0.5, 0.0), 0.3);
 	meshes.push_back(m1);
 
 	// modelMat =  (translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1)).transpose();
