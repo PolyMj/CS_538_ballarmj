@@ -60,6 +60,27 @@ namespace potato {
 			specular = specular * (v.specular * v.metallicity);
 		};
 
+
+		// Modifies itself to become a new reflection ray
+		void reflectSelf(Vertd v, Vec3d diffuse_scalar, Vec3d rand) {
+			// Get new direction vector
+			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
+			
+			// Interpolate between random direction vector and reflection direction
+			if (rand.dot(v.normal))
+				rand = rand * -1.0;
+			direction = (direction.mix(rand.normalize(), v.roughness/2.0)).normalize();
+
+
+			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
+			start = v.pos + direction * BASICALLY_ZERO;
+
+			// Diffuse += (diffuse color) * (remaining light being reflected) * (non-metallicity) * (scalar)
+			diffuse = diffuse + (v.diffuse * specular * (1.0-v.metallicity) * diffuse_scalar);
+			// Specular *= (specular color) * (metallicity)
+			specular = specular * (v.specular * v.metallicity);
+		};
+
 		// Return positiong of ray at parameter T
 		Vec3d posFromT(double T) {
 			return start + direction * T;

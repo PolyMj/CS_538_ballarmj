@@ -43,7 +43,7 @@
 #define NEAR_PLANE 0.1
 #define VIEW_HEIGHT NEAR_PLANE
 
-#define RANDOMNESS 0.5
+#define RANDOMNESS 1.0
 #define ENABLE_RANDOM true
 #define AVERAGE_FRAMES true
 

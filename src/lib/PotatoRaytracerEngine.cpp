@@ -15,19 +15,19 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	Mat4d modelMat = translate(2.4, -2.0, -20.0) * uniformScale(4.0) * foxMat;
 	PolyMeshd *tp1 = new PolyMeshd();
 	tp1 = loadOBJTriangleMesh("sampleModels/fox.obj");
-	tp1->blendNormals = true;
+	tp1->blendNormals = false;
 	tp1->transform(modelMat);
 	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4));
-	tp1->uniformRetexture(0.8, 1.0);
+	tp1->uniformRetexture(0.8, 0.2);
 	meshes.push_back(tp1);
 
 	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(3.0) * foxMat;
 	PolyMeshd *tp2 = new PolyMeshd();
 	tp2 = loadOBJTriangleMesh("sampleModels/fox.obj");
-	tp2->blendNormals = true;
+	tp2->blendNormals = false;
 	tp2->transform(modelMat);
 	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
-	tp2->uniformRetexture(1.0, 1.0);
+	tp2->uniformRetexture(1.0, 0.1);
 	meshes.push_back(tp2);
 
 	modelMat = translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8);
@@ -36,7 +36,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	c1->blendNormals = false;
 	c1->transform(modelMat);
 	c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
-	c1->uniformRetexture(1.0, 0.5);
+	c1->uniformRetexture(1.0, 0.2);
 	meshes.push_back(c1);
 
 	modelMat =  translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0);
@@ -48,13 +48,13 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	m1->uniformRetexture(1.0, 0.0);
 	meshes.push_back(m1);
 
-	modelMat =  translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1);
+	modelMat =  translate<double>(-3.0, -1.0, -28) * scale<double>(15, 15, 0.1);
 	PolyMeshd *m2 = new PolyMeshd();
 	m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m2->blendNormals = false;
 	m2->transform(modelMat);
 	m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	m2->uniformRetexture(1.0, 0.15);
+	m2->uniformRetexture(1.0, 0.05);
 	meshes.push_back(m2);
 }
 
@@ -102,7 +102,7 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 		if (collideRay(ray, col_vert)) {
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
 			if (ENABLE_RANDOM)
-				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), randDouble());
+				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), Vec3d(randDouble(), randDouble(), randDouble()));
 			else
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar));
 		}
@@ -126,6 +126,7 @@ struct BBCollideData {
 // Returns the color from the given raycast
 bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 	
+	// List of collisions with bounding boxes
 	vector<BBCollideData> bb_collides = {};
 	// For each mesh
 	for (int i = 0; i < meshes.size(); i++) {
@@ -156,6 +157,7 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 			continue;
 		}
 
+		// Insert into the list
 		bool added = false;
 		for (int i = 0; i < bb_collides.size(); i++) {
 			// Insert new collide to correct location (sorted by near_t)
@@ -171,9 +173,9 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 			bb_collides.push_back(new_collide);
 	}
 
-
-	Vertd last_vert;
-	double last_cld_t = -1;
+	// Data about the closest collision (if any)
+	Vertd closest_cld_vert;
+	double closest_cld_t = -1;
 	bool hasBeenACollide = false;
 
 	// For each bounding box collision
@@ -185,7 +187,7 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 		BoundBoxd bb = BoundBoxd(ray.posFromT(bb_cld.near_t), ray.posFromT(bb_cld.far_t));
 
 		// If the closest possible collision is still further than another found collision
-		if (hasBeenACollide && bb_cld.near_t > last_cld_t)
+		if (hasBeenACollide && bb_cld.near_t > closest_cld_t)
 			continue;
 		
 		// For each face
@@ -205,7 +207,7 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 				continue; // Skip
 
 			// If there was another closer collision
-			if (hasBeenACollide && cld_t > last_cld_t)
+			if (hasBeenACollide && cld_t > closest_cld_t)
 				continue; // Skip
 
 			// If collision with plane is not within the ray's intersection bounding box
@@ -220,14 +222,15 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 			if (!isInside(bary))
 				continue; // Skip to next face
 
-			last_cld_t = cld_t;
-			last_vert = face.interpolateFaceBary(bary, false);
-			last_vert.pos = pos;
+			closest_cld_t = cld_t;
+			closest_cld_vert = face.interpolateFaceBary(bary, false);
+			closest_cld_vert.pos = pos;
 			hasBeenACollide = true;
 		}
 	}
 
-	
-	col_vert = last_vert;
+	// Put the new collision vert into the reference variable
+	col_vert = closest_cld_vert;
+	// Return whether or not a collision was found
 	return hasBeenACollide;
 }
