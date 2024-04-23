@@ -5,10 +5,11 @@
    - Expand to allow for checking multiple polygons. 
    - Expand to check on a model-by-model basis, using bounding boxes to optimize these checks. 
    - Focus will be in direct/specular lighting, but diffuse lighting will be simulated if time allows. 
- - After 4/20
-   - I'll try using similations to define a function that can be used to approximate the ambient lighting behaviour of a model. 
-   - These "ambient functions" will take in all light sources during an initial lighting pass, then during rendering will take in a point and return the influence they have on the lighting of that point. 
-   - All of this will likely be on a separate branch, called something like "final_project_ambiance"
+ - ~~After 4/20~~
+   - ~~I'll try using similations to define a function that can be used to approximate the ambient lighting behaviour of a model. ~~
+   - ~~These "ambient functions" will take in all light sources during an initial lighting pass, then during rendering will take in a point and return the influence they have on the lighting of that point. ~~
+   - ~~All of this will likely be on a separate branch, called something like "final_project_ambiance"~~
+   - Scratch literally all of this, I just get excited at dumb ideas and jump to step 10 before I've started step 1
 
 #
 # Misc Notes
@@ -28,7 +29,7 @@
  - Overall structure of Code
    - I'm having trouble understanding how this project is structured overall. My raytracer's drawing is called using renderToDrawBuffer(), but I can't trace it back to any calls starting from PotatoRenderApp.cpp. I tried using VSCode's search function to search all files but can't find any references to this function other than in PotatoRenderEngine.cpp, but it's in a function that I also can't trace back. 
    - I need to figure out the structure so I can know where to load models, move the camera, and other application-level operations. Currently, I don't know how to communicate any of this data to my raytracers. 
-   - "117, that's an number of commitment." - Michael J. Reale
+   - "117? That's an number of commitment." - Michael J. Reale
  - Important Notes
    - Change renderer to not do double buffering and to draw while rendering
    - Turn off VSync

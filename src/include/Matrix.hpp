@@ -101,10 +101,10 @@ namespace potato {
         { 
             Mat4<T> t = transpose(); 
             return { 
-                t.cols[0].dot(m.cols[0]), t.cols[0].dot(m.cols[1]), t.cols[0].dot(m.cols[2]), t.cols[0].dot(m.cols[3]), 
-                t.cols[1].dot(m.cols[0]), t.cols[1].dot(m.cols[1]), t.cols[1].dot(m.cols[2]), t.cols[1].dot(m.cols[3]), 
-                t.cols[2].dot(m.cols[0]), t.cols[2].dot(m.cols[1]), t.cols[2].dot(m.cols[2]), t.cols[2].dot(m.cols[3]), 
-                t.cols[3].dot(m.cols[0]), t.cols[3].dot(m.cols[1]), t.cols[3].dot(m.cols[2]), t.cols[3].dot(m.cols[3]), 
+                t.cols[0].dot(m.cols[0]), t.cols[1].dot(m.cols[0]), t.cols[2].dot(m.cols[0]), t.cols[3].dot(m.cols[0]), 
+                t.cols[0].dot(m.cols[1]), t.cols[1].dot(m.cols[1]), t.cols[2].dot(m.cols[1]), t.cols[3].dot(m.cols[1]), 
+                t.cols[0].dot(m.cols[2]), t.cols[1].dot(m.cols[2]), t.cols[2].dot(m.cols[2]), t.cols[3].dot(m.cols[2]), 
+                t.cols[0].dot(m.cols[3]), t.cols[1].dot(m.cols[3]), t.cols[2].dot(m.cols[3]), t.cols[3].dot(m.cols[3]), 
             }; 
         }; 
  

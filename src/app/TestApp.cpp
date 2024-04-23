@@ -35,8 +35,16 @@ void printMat4(Mat4d mat) {
 		}
 		cout << endl;
 	}
+	cout << endl;
 }
 
 int main() {
-	
+	Mat4d a, b, c;
+	a = translate<double>(1, 2, 3);
+	b = scale<double>(4, 5, 6);
+	c = b * a;
+
+	printMat4(a);
+	printMat4(b);
+	printMat4(c);
 }

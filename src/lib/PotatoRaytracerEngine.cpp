@@ -12,7 +12,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	// I need to take the transpose of whatever I do for it do work
 	// Will fix later
 
-	Mat4d modelMat = (translate<double>(2.4, -3.0, -19) * uniformScale(2.0)).transpose();
+	Mat4d modelMat = translate<double>(2.4, -3.0, -19) * uniformScale(2.0);
 	PolyMeshd *tp1 = new PolyMeshd();
 	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
 	tp1->blendNormals = true;
@@ -36,7 +36,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	// c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
 	// meshes.push_back(c1);
 
-	modelMat =  (translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0)).transpose();
+	modelMat =  translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0);
 	PolyMeshd *m1 = new PolyMeshd();
 	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m1->blendNormals = false;
