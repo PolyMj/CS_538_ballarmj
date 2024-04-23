@@ -3,7 +3,7 @@
 using namespace potato;
 using namespace std;
 
-void printVec3(Vec3f v, bool endline = true) {
+void printVec3(Vec3d v, bool endline = true) {
 	cout << "(";
 	for (int i = 0; i < 3; i++) {
 		printf("%.3f", v[i]);
@@ -39,12 +39,7 @@ void printMat4(Mat4d mat) {
 }
 
 int main() {
-	Mat4d a, b, c;
-	a = translate<double>(1, 2, 3);
-	b = scale<double>(4, 5, 6);
-	c = b * a;
+	Mat4d m = rotateMat<double>((-90.0*3.14/180.0), 0.0, 0.0);
 
-	printMat4(a);
-	printMat4(b);
-	printMat4(c);
+	printMat4(m);
 }

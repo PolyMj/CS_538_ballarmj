@@ -30,6 +30,8 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         uniform_real<double> dis = uniform_real<double>(0, RANDOMNESS);
         inline double randDouble() { return dis(gen); };
 
+        int buffer_passes = 0;
+
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
 

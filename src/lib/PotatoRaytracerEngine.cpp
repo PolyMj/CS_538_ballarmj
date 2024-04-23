@@ -6,20 +6,24 @@
 #define Z_AXIS Vec4d(0.0f, 0.0f, 1.0f, 0.0f)
 #define W_AXIS Vec4d(0.0f, 0.0f, 0.0f, 1.0f)
 
+#define DEG_90 (90.0*3.14/180.0)
+
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	Mat4d modelMat = translate<double>(2.4, -3.0, -19) * uniformScale(2.0);
+	Mat4d foxMat = rotateMat<double>(DEG_90, -DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
+
+	Mat4d modelMat = translate(2.4, -2.0, -20.0) * uniformScale(4.0) * foxMat;
 	PolyMeshd *tp1 = new PolyMeshd();
-	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	tp1 = loadOBJTriangleMesh("sampleModels/fox.obj");
 	tp1->blendNormals = true;
 	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), Vec3d(1.0, 1.0, 0.3));
-	tp1->uniformRetexture(0.8, 0.5);
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4));
+	tp1->uniformRetexture(0.8, 1.0);
 	meshes.push_back(tp1);
 
-	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0);
+	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(3.0) * foxMat;
 	PolyMeshd *tp2 = new PolyMeshd();
-	tp2 = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	tp2 = loadOBJTriangleMesh("sampleModels/fox.obj");
 	tp2->blendNormals = true;
 	tp2->transform(modelMat);
 	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
@@ -41,7 +45,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	m1->blendNormals = false;
 	m1->transform(modelMat);
 	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
-	m1->uniformRetexture(1.0, 0.1);
+	m1->uniformRetexture(1.0, 0.0);
 	meshes.push_back(m1);
 
 	modelMat =  translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1);
@@ -50,7 +54,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	m2->blendNormals = false;
 	m2->transform(modelMat);
 	m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	m2->uniformRetexture(1.0, 0.1);
+	m2->uniformRetexture(1.0, 0.15);
 	meshes.push_back(m2);
 }
 
@@ -81,11 +85,12 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 
 // Draw everything to draw buffer; called once per drawing loop iteration
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
+	buffer_passes++;
 	for (int x = 0; x < windowWidth; x++) {
 		Ray ray;
 		for (int y = 0; y < windowHeight; y++) {
 			ray = Ray(windowWidth, windowHeight, x, y);
-			drawBuffer->setPixel(x, y, raycast(ray));
+			drawBuffer->setPixel(x, y, Vec3f(drawBuffer->getPixel(x,y)).mix(raycast(ray), 1.0f/(float)buffer_passes));
 		}
 	}
 }

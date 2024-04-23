@@ -48,7 +48,7 @@ namespace potato {
 		void reflectSelf(Vertd v, Vec3d diffuse_scalar, double rand = 0.0) {
 			// Get new direction vector
 			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
-			direction = (direction.mix(v.normal, rand)).normalize();
+			direction = (direction.mix(v.normal, rand*v.roughness)).normalize();
 
 
 			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
