@@ -38,6 +38,8 @@
    - Threadpool stuff?
      - Just doing one row at a time? 
    - 
+### 4/22/2024
+  - Store last face and collision point, then only interpolate with barycentric after you know for certain that the given collision is the closest one.
 
 #
 # Resources

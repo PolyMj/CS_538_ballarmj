@@ -23,7 +23,8 @@ namespace potato {
         union {Vec3d color {}, diffuse; }; // [0,1] 
         Vec3d specular;
         Vec3d normal;
-        double metallicity;
+        double metallicity = 0.5;
+        double roughness = 0.5;
 
  
         Vertd operator+(const Vertd &other) const { 
@@ -82,6 +83,7 @@ namespace potato {
             interp.diffuse = interpolateBary(bary, v0.diffuse, v1.diffuse, v2.diffuse);
             interp.specular = interpolateBary(bary, v0.specular, v1.specular, v2.specular);
             interp.metallicity = interpolateBary(bary, v0.metallicity, v1.metallicity, v2.metallicity);
+            interp.roughness = interpolateBary(bary, v0.roughness, v1.roughness, v2.roughness);
 
             return interp;
         };
@@ -207,18 +209,23 @@ namespace potato {
             computeBounds();
         };
 
-        void uniformRecolor(Vec3d diffuse, Vec3d specular, double metallicity = 1.0) {
-            metallicity = max(0.0, min(metallicity, 1.0)); // Validate metallicity
+        void uniformRecolor(Vec3d diffuse, Vec3d specular) {
             for (int i = 0; i < vertices.size(); i++) {
                 vertices.at(i).specular = specular;
                 vertices.at(i).diffuse = diffuse;
-                vertices.at(i).metallicity = metallicity;
             }
         };
 
         // Uses same color for specular and diffuse
-        void uniformRecolor(Vec3d color, double metallicity = 1.0) {
-            uniformRecolor(color, color, metallicity);
+        void uniformRecolor(Vec3d color) {
+            uniformRecolor(color, color);
+        }
+
+        void uniformRetexture(double metallicity, double roughness) {
+            for (int i = 0; i < vertices.size(); i++) {
+                vertices.at(i).metallicity = metallicity;
+                vertices.at(i).roughness = roughness;
+            }
         }
 
         void debugRecolor() {

@@ -8,57 +8,50 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	// I think the matrix multiplication is implemented incorrectly
-	// I need to take the transpose of whatever I do for it do work
-	// Will fix later
-
 	Mat4d modelMat = translate<double>(2.4, -3.0, -19) * uniformScale(2.0);
 	PolyMeshd *tp1 = new PolyMeshd();
 	tp1 = loadOBJTriangleMesh("sampleModels/teapot.obj");
 	tp1->blendNormals = true;
 	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), 0.5);
+	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4), Vec3d(1.0, 1.0, 0.3));
+	tp1->uniformRetexture(0.8, 0.5);
 	meshes.push_back(tp1);
 
-	// modelMat = (translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0)).transpose();
-	// PolyMeshd *tp2 = new PolyMeshd();
-	// tp2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	// tp2->blendNormals = false;
-	// tp2->transform(modelMat);
-	// tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
-	// meshes.push_back(tp2);
+	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(1.0);
+	PolyMeshd *tp2 = new PolyMeshd();
+	tp2 = loadOBJTriangleMesh("sampleModels/teapot.obj");
+	tp2->blendNormals = true;
+	tp2->transform(modelMat);
+	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
+	tp2->uniformRetexture(1.0, 1.0);
+	meshes.push_back(tp2);
 
-	// modelMat = (translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8)).transpose();
-	// PolyMeshd *c1 = new PolyMeshd();
-	// c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	// c1->blendNormals = false;
-	// c1->transform(modelMat);
-	// c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
-	// meshes.push_back(c1);
+	modelMat = translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8);
+	PolyMeshd *c1 = new PolyMeshd();
+	c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	c1->blendNormals = false;
+	c1->transform(modelMat);
+	c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
+	c1->uniformRetexture(1.0, 0.5);
+	meshes.push_back(c1);
 
 	modelMat =  translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0);
 	PolyMeshd *m1 = new PolyMeshd();
 	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	m1->blendNormals = false;
 	m1->transform(modelMat);
-	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0), Vec3d(1.0, 0.5, 0.0), 0.3);
+	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
+	m1->uniformRetexture(1.0, 0.1);
 	meshes.push_back(m1);
 
-	// modelMat =  (translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1)).transpose();
-	// PolyMeshd *m2 = new PolyMeshd();
-	// m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	// m2->blendNormals = false;
-	// m2->transform(modelMat);
-	// m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	// meshes.push_back(m2);
-
-	// Mat4d modelMat =  (translate<double>(-3.0, -8.0, -30) * uniformScale<double>(0.1)).transpose();
-	// PolyMeshd *lt = new PolyMeshd();
-	// lt = loadOBJTriangleMesh("sampleModels/New Hexaeder v24.obj");
-	// lt->blendNormals = false;
-	// lt->transform(modelMat);
-	// lt->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	// meshes.push_back(lt);
+	modelMat =  translate<double>(-3.0, -1.0, -40) * scale<double>(15, 15, 0.1);
+	PolyMeshd *m2 = new PolyMeshd();
+	m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	m2->blendNormals = false;
+	m2->transform(modelMat);
+	m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
+	m2->uniformRetexture(1.0, 0.1);
+	meshes.push_back(m2);
 }
 
 // Delete/clear all data
@@ -88,8 +81,6 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 
 // Draw everything to draw buffer; called once per drawing loop iteration
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
-	// For each ray starting from camera
-		// raycast()
 	for (int x = 0; x < windowWidth; x++) {
 		Ray ray;
 		for (int y = 0; y < windowHeight; y++) {
@@ -105,7 +96,10 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
 	for (int i = 0; i < MAX_BOUNCES; i++) {
 		if (collideRay(ray, col_vert)) {
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
-			ray.reflectSelf(col_vert, diffuse_scalar);
+			if (ENABLE_RANDOM)
+				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), randDouble());
+			else
+				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar));
 		}
 		else {
 			break;
@@ -146,9 +140,9 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 		
 		// Put all data into a struct
 		BBCollideData new_collide = {
-			i,
-			t1,
-			t2
+			i,	// Mesh index
+			t1,	// Closest collision (or ray.start if inside bounding box)
+			t2	// Furthest collision
 		};
 		
 		// If list of collides is empty, add first one
@@ -186,7 +180,7 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 		BoundBoxd bb = BoundBoxd(ray.posFromT(bb_cld.near_t), ray.posFromT(bb_cld.far_t));
 
 		// If the closest possible collision is still further than another found collision
-		if (hasBeenACollide && min(bb_cld.near_t, bb_cld.far_t) > last_cld_t)
+		if (hasBeenACollide && bb_cld.near_t > last_cld_t)
 			continue;
 		
 		// For each face

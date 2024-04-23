@@ -40,8 +40,11 @@
 
 // Raytracer options
 #define MAX_BOUNCES 10
-#define NEAR_PLANE 0.1f
+#define NEAR_PLANE 0.1
 #define VIEW_HEIGHT NEAR_PLANE
+
+#define RANDOMNESS 0.1
+#define ENABLE_RANDOM true
 
 #define VSYNC false
 #define DOUBLE_BUFFERING false

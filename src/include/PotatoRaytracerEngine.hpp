@@ -1,5 +1,6 @@
 #pragma once 
  
+#include <random>
 #include "PotatoRenderEngine.hpp" 
 #include "Rasterize.hpp" 
 #include "Meshd.hpp"
@@ -23,6 +24,11 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         Vec3d lightDirection = Vec3d(0.3, 1.0, 0.7).normalize();
 
         vector<PolyMeshd*> meshes;
+        
+        // Random number stuff
+        mt19937 gen = mt19937(std::random_device{}());
+        uniform_real<double> dis = uniform_real<double>(0, RANDOMNESS);
+        inline double randDouble() { return dis(gen); };
 
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);

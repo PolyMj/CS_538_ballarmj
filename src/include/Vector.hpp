@@ -28,6 +28,7 @@ namespace potato {
         union { T w{}, a, q; }; 
  
         Vec4() = default; 
+        Vec4(T a): x(a), y(a), z(a), w(a) {};
         Vec4(T x, T y, T z, T w): x(x), y(y), z(z), w(w) {}; 
         Vec4(Vec3<T> v, T w): x(v.x), y(v.y), z(v.z), w(w) {}; 
  
@@ -177,6 +178,7 @@ namespace potato {
         union { T z{}, b, p; }; 
  
         Vec3() = default; 
+        Vec3(T a): x(a), y(a), z(a) {};
         Vec3(T x, T y, T z): x(x), y(y), z(z) {}; 
  
         template<typename U> 

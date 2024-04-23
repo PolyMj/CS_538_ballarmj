@@ -1,6 +1,6 @@
 #pragma once
 
-#include <concepts>
+#include <random>
 #include "Vector.hpp"
 #include "Meshd.hpp"
 #include "Settings.hpp" // For near plane and fov (VIEW_HEIGHT)
@@ -45,8 +45,12 @@ namespace potato {
 
 
 		// Modifies itself to become a new reflection ray
-		void reflectSelf(Vertd v, Vec3d diffuse_scalar) {
+		void reflectSelf(Vertd v, Vec3d diffuse_scalar, double rand = 0.0) {
+			// Get new direction vector
 			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
+			direction = (direction.mix(v.normal, rand)).normalize();
+
+
 			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
 			start = v.pos + direction * BASICALLY_ZERO;
 
@@ -55,10 +59,6 @@ namespace potato {
 			// Specular *= (specular color) * (metallicity)
 			specular = specular * (v.specular * v.metallicity);
 		};
-
-		void reflectSelf(Vertd v, double diffuse_scalar) {
-			reflectSelf(v, Vec3d(diffuse_scalar, diffuse_scalar, diffuse_scalar));
-		}
 
 		// Return positiong of ray at parameter T
 		Vec3d posFromT(double T) {
