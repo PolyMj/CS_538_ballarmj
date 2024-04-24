@@ -43,7 +43,7 @@ namespace potato {
 		};
 
 
-		// Modifies itself to become a new reflection ray
+		// Modifies itself to become a new reflection ray (For imperfect/randomized reflections)
 		void reflectSelf(Vertd v, Vec3d diffuse_scalar, Vec3d rand) {
 			// Get new direction vector
 			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
@@ -62,6 +62,22 @@ namespace potato {
 			// Specular *= (specular color) * (metallicity)
 			specular = specular * (v.specular * v.metallicity);
 		};
+
+		// Modifies itself to become a new reflection ray (For perfect reflections, e.g. mirrors)
+		void reflectSelf(Vertd v, Vec3d diffuse_scalar) {
+			// Get new direction vector
+			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
+
+			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
+			start = v.pos + direction * BASICALLY_ZERO;
+
+			// Diffuse += (diffuse color) * (remaining light being reflected) * (non-metallicity) * (scalar)
+			diffuse = diffuse + (v.diffuse * specular * (1.0-v.metallicity) * diffuse_scalar);
+			// Specular *= (specular color) * (metallicity)
+			specular = specular * (v.specular * v.metallicity);
+		};
+
+
 
 		// Return positiong of ray at parameter T
 		Vec3d posFromT(double T) {
