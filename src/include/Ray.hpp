@@ -31,33 +31,15 @@ namespace potato {
 			ray_y -= (double)res_y/2;
 
 			// Rescale to acheive proper FOV
-			double scale_y = VIEW_HEIGHT / res_y;
-			double scale_x = scale_y * res_x / res_y;
-			ray_x *= scale_x;
-			ray_y *= scale_y;
+			double scale = VIEW_HEIGHT / res_y;
+			ray_x *= scale;
+			ray_y *= scale;
 			
 			// Rays will start from a position on the near plane
 			// Must be NEGATIVE of NEAR_PLANE since camera is facing in negative Z
 			direction = Vec3d(ray_x, ray_y, -NEAR_PLANE);
 			start = direction;
 			direction = direction.normalize();
-		};
-
-
-		// Modifies itself to become a new reflection ray
-		void reflectSelf(Vertd v, Vec3d diffuse_scalar, double rand = 0.0) {
-			// Get new direction vector
-			direction = direction - v.normal * (direction.dot(v.normal)/v.normal.dot(v.normal)) * 2;
-			direction = (direction.mix(v.normal, rand*v.roughness)).normalize();
-
-
-			// Moves the ray forward very slightly so it doesn't insersect with what it collided with
-			start = v.pos + direction * BASICALLY_ZERO;
-
-			// Diffuse += (diffuse color) * (remaining light being reflected) * (non-metallicity) * (scalar)
-			diffuse = diffuse + (v.diffuse * specular * (1.0-v.metallicity) * diffuse_scalar);
-			// Specular *= (specular color) * (metallicity)
-			specular = specular * (v.specular * v.metallicity);
 		};
 
 
