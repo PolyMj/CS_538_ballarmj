@@ -46,6 +46,7 @@
 #define RANDOMNESS 1.0
 #define ENABLE_RANDOM true
 #define AVERAGE_FRAMES true
+#define USE_UNCERTAINTY true
 
 #define VSYNC false
 #define DOUBLE_BUFFERING false

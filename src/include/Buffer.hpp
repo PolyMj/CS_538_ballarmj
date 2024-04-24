@@ -102,8 +102,10 @@ namespace potato {
             void setPixel(int x, int y, const T &val) { 
                 Buffer<T>::set(getIndex(x,y), val); 
             }; 
- 
-            T& getPixel(int x, int y) const { 
+
+            // This was returning T&, but that was causing errors when making buffers of doubles
+            // Not sure if that will break things so I'm making a note of it here
+            T getPixel(int x, int y) const { 
                 return Buffer<T>::get(getIndex(x,y)); 
             }; 
     }; 

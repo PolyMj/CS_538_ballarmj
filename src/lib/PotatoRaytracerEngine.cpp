@@ -10,9 +10,12 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
+	certaintyBuffer = new Image<double>(windowWidth, windowHeight);
+	certaintyBuffer->clear(0.0);
+	
 	Mat4d foxMat = rotateMat<double>(DEG_90, -DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
 
-	Mat4d modelMat = translate(2.4, -2.0, -20.0) * uniformScale(4.0) * foxMat;
+	Mat4d modelMat = translate(2.4, -2.0, -20.0) * uniformScale(2.0) * foxMat;
 	PolyMeshd *tp1 = new PolyMeshd();
 	tp1 = loadOBJTriangleMesh("sampleModels/fox.obj");
 	tp1->blendNormals = false;
@@ -21,7 +24,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	tp1->uniformRetexture(0.8, 0.2);
 	meshes.push_back(tp1);
 
-	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(3.0) * foxMat;
+	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(2.0) * foxMat;
 	PolyMeshd *tp2 = new PolyMeshd();
 	tp2 = loadOBJTriangleMesh("sampleModels/fox.obj");
 	tp2->blendNormals = false;
@@ -87,19 +90,34 @@ void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat)
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	buffer_passes++;
 	for (int x = 0; x < windowWidth; x++) {
-		Ray ray;
 		for (int y = 0; y < windowHeight; y++) {
-			ray = Ray(windowWidth, windowHeight, x, y);
-			drawBuffer->setPixel(x, y, Vec3f(drawBuffer->getPixel(x,y)).mix(raycast(ray), 1.0f/(float)buffer_passes));
+			int certainty = certaintyBuffer->getPixel(x,y);
+			double new_certainty = 0;
+			if (USE_UNCERTAINTY) {
+				for (int i = 0; i <= certainty; i++) {
+					double temp;
+					Ray ray = Ray(windowWidth, windowHeight, x, y);
+					Vec3d color = raycast(ray, temp);
+					drawBuffer->setPixel(x, y, Vec3f(drawBuffer->getPixel(x,y)).mix(color, 1.0f/(float)buffer_passes));
+					new_certainty += temp;
+				}
+				certaintyBuffer->setPixel(x,y,new_certainty*10.0);
+			}
+			else {
+				Ray ray = Ray(windowWidth, windowHeight, x, y);
+				double temp;
+				drawBuffer->setPixel(x, y, Vec3f(drawBuffer->getPixel(x,y)).mix(raycast(ray, temp), 1.0f/(float)buffer_passes));
+			}
 		}
 	}
 }
 
-Vec3f PotatoRaytracerEngine::raycast(Ray ray) {
-	
+Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &certainty) {
 	Vertd col_vert;
+	certainty = 0;
 	for (int i = 0; i < MAX_BOUNCES; i++) {
 		if (collideRay(ray, col_vert)) {
+			certainty += col_vert.roughness * ray.specular.length();
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
 			if (ENABLE_RANDOM)
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), Vec3d(randDouble(), randDouble(), randDouble()));
