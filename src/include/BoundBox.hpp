@@ -22,7 +22,8 @@ namespace potato {
             end = maxV(p1, p2);
         };
 
-        // Does NOT check if 0 <= u|v <= 2 because efficiency (and laziness)
+        // Checks if a point is within the bounds using only two axes, u and v
+        // Assumes that 0 <= u || v < 3, will give an error if an invalid value is passed
         bool bounds2D(uint_fast8_t u, uint_fast8_t v, T pos_u, T pos_v) {
             return (
                 start[u] <= pos_u && pos_u <= end[u] &&
@@ -30,10 +31,13 @@ namespace potato {
             );
         };
 
+        // Returns the Extended Cohen SutherLand Code for a point
         int getECSLCode(Vec3d pos) {
             return getExtendedCohenSutherlandCode(pos, start.x, end.x, start.y, end.y, start.z, end.z);
         };
 
+        // Splits the bounding box into two that are diagonal to each other
+        // Total volume is 1/4 the original
         BoundBox<T> split() {
             Vec3d middle = (start + end) / 2.0;
             BoundBox<T> bb2 = BoundBox<T>(middle, end); // New goes from middle to end

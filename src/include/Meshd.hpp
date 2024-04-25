@@ -18,9 +18,7 @@ namespace potato {
  
     struct Vertd { 
         Vec3d pos {}; 
-        // Union is used because several other programs refer to this attribute as "color",
-        // but I specifically want diffuse color
-        union {Vec3d color {}, diffuse; }; // [0,1] 
+        Vec3d diffuse; // [0,1] 
         Vec3d specular;
         Vec3d normal;
         double metallicity = 0.5;
@@ -30,28 +28,28 @@ namespace potato {
         Vertd operator+(const Vertd &other) const { 
             return { 
                 pos + other.pos, 
-                color + other.color 
+                diffuse + other.diffuse 
             }; 
         }; 
  
         Vertd operator-(const Vertd &other) const { 
             return { 
                 pos - other.pos, 
-                color - other.color 
+                diffuse - other.diffuse 
             }; 
         }; 
  
         Vertd operator*(const Vertd &other) const { 
             return { 
                 pos * other.pos, 
-                color * other.color 
+                diffuse * other.diffuse 
             }; 
         }; 
  
         Vertd operator*(const float &w) const { 
             return { 
                 pos * w, 
-                color * w 
+                diffuse * w 
             }; 
         }; 
     }; 
@@ -231,11 +229,13 @@ namespace potato {
         void debugRecolor() {
             for (int i = 0; i < vertices.size(); i++) {
                 Vec3d pos = vertices.at(i).pos;
-                vertices.at(i).color = Vec3d(
+                Vec3d color = Vec3d(
                     abs(pos.x) / (abs(pos.x) + 1),
                     abs(pos.y) / (abs(pos.y) + 1),
                     abs(pos.z) / (abs(pos.z) + 1)
                 );
+                vertices.at(i).diffuse = color;
+                vertices.at(i).specular = color;
             }
         };
     }; 

@@ -31,7 +31,7 @@ namespace potato {
 		return bitpattern;
 	}
 
-	// Version without w coordinate
+	// Same as above but without w coordinate
 	int getExtendedCohenSutherlandCode(Vec3d v, double left, double right, double bottom, double top, double near, double far) {
 		int bitpattern = 0;
 		

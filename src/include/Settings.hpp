@@ -44,12 +44,13 @@
 #define VIEW_HEIGHT NEAR_PLANE*1.3
 
 #define RANDOMNESS 1.0
-#define ENABLE_RANDOM false
-#define USE_UNCERTAINTY false
+#define ENABLE_RANDOM true
+#define USE_UNCERTAINTY true
 #define UNCERTAINTY_SCALE 5.0
 #define MISS_DISTANCE 2.0
+#define PASSES_BEFORE_UNCERTAINTY 3
 
 #define VSYNC false
 #define DOUBLE_BUFFERING false
 #define CLEAR_DRAW_BUFFER_PER_FRAME false
-#define UNCERTAINTY_DEBUG false
+#define UNCERTAINTY_DEBUG true

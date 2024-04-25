@@ -14,9 +14,10 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	uncertaintyBuffer = new Image<double>(windowWidth, windowHeight);
 	uncertaintyBuffer->clear(0.0);
 	
+	//// Everything after this is just loading and placing models ////
+
 	Mat4d foxMat = rotateMat<double>(-DEG_90, DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
 	Mat4d vaseMat = translate(0.0, -1.0, 0.0) * uniformScale<double>(1.0/40);
-
 
 	Mat4d modelMat = translate(0.0, -1.0, 0.0) * scale(1000.0, 0.1, 1000.0);
 	PolyMeshd *floor = loadOBJTriangleMesh("sampleModels/cube.obj");
@@ -50,6 +51,7 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	wall2->uniformRetexture(1.0, 0.2);
 	wall2->transform(modelMat);
 	meshes.push_back(wall2);
+	//// Done loading models ////
 }
 
 // Delete/clear all data
@@ -75,18 +77,32 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 		for (int y = 0; y < windowHeight; y++) {
 			// If using the uncertainty buffer to perform more raycasts in less certain areas
 			if (USE_UNCERTAINTY) {
-				// Get the uncertainty and round it to an int, then add 1
 				int uncertainty = (int)(uncertaintyBuffer->getPixel(x,y)*UNCERTAINTY_SCALE)+1;
-				double new_uncertainty = 0.0;
-				Vec3d color = {};
-				// Greater uncertainty ==> More raycasts
-				for (int i = 0; i < uncertainty; i++) {
-					double temp_uc; // Partial uncertainty passed by reference to next raycast
-					Ray ray = Ray(windowWidth, windowHeight, x, y);
-					color = color.mix(raycast(ray, temp_uc), 1.0/(double)(i+1)); // Blend the colors from each raycost into color
-					new_uncertainty += temp_uc / (uncertainty); // Add partial uncertainty to the new total for the pixel
+				double new_uncertainty = 0.0; // New uncertainty to be calcualted through raycasts
+				Vec3d color = {}; // Final color from all raycasts
+				
+				// If we've done enough normal passes
+				if (buffer_passes > PASSES_BEFORE_UNCERTAINTY) {
+					// Cast a number of rays : Greater uncertainty ==> More raycasts
+					for (int i = 0; i < uncertainty; i++) {
+						// Cast the ray
+						double partial_uncertainty; // Passed by reference, will contain the uncertainty of a single raycast
+						Ray ray = Ray(windowWidth, windowHeight, x, y);
+						Vec3d partial_color = raycast(ray, partial_uncertainty);
+
+						// Blend the partial color into color
+						color = color.mix(partial_color, 1.0/(double)(i+1)); 
+						// Increment the new uncertainty by the partial
+						new_uncertainty += partial_uncertainty / (uncertainty);
+					}
 				}
-				// For debugging the uncertainty buffer
+				// If not, just do a normal pass
+				else {
+					Ray ray = Ray(windowWidth, windowHeight, x, y);
+					color = raycast(ray, new_uncertainty);
+				}
+
+				// Set the color of the pixel
 				if (UNCERTAINTY_DEBUG)
 					drawBuffer->setPixel(x,y, Vec3f((new_uncertainty/(new_uncertainty+UNCERTAINTY_SCALE))));
 				else  {
@@ -96,9 +112,11 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 						weight *= weight;
 					drawBuffer->setPixel(x,y,drawBuffer->getPixel(x,y).mix(color, 1.0-weight));
 				}
+
 				// Update the uncertainty buffer
 				uncertaintyBuffer->setPixel(x,y, max(new_uncertainty, uncertaintyBuffer->getPixel(x,y)));
 			}
+
 			// If not using uncertainty, just do a single raycast and merge it with the current color in drawBuffer
 			else {
 				Ray ray = Ray(windowWidth, windowHeight, x, y);
@@ -121,7 +139,7 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty) {
 		double disatnce; // Pass into collideRay to get the distance traveled for the collision
 		double uncertainty_factor = col_vert.roughness * ray.specular.length();
 		if (collideRay(ray, col_vert, disatnce)) {
-			// Get the diffuse scalar based on the diffuse color, normal direciton, and light direction
+			// Get the diffuse scalar based on the diffuse color, normal direciton, and light direction (light color assumed to be white)
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
 			
 			// Reflect the ray

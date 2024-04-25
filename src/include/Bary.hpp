@@ -48,12 +48,11 @@ namespace potato {
         );
     };
 
-    // Returns a boolean of whether or not the point is inside the triangle
-    // Assumes you've already validated that the point is coplanar with the triangle
-    // Will use whichever two axes are smallest in the normal for barycentric calculations
+    // Returns the barycentric weights of pos using p1, p2, p3 as the vertices of a triangle
+    // Looks at the face's normal to determine which 2 axes to use (barycentric is 2D, points are 3D)
     template<typename T>
     inline Vec3<T> bary3D(Vec3<T> pos, Vec3<T> p1, Vec3<T> p2, Vec3<T> p3, Vec3<T> normal) {
-        // Find two smallest normal values and store their indicies
+        // Find two smallest normal values and store their indicies/axes
         uint_fast8_t u, v;
         if (abs(normal.x) < abs(normal.y)) {
             u = 0;
@@ -82,8 +81,9 @@ namespace potato {
         return bary;
     }
 
+    // Converts from Vec4's to Vec3's and calls the above function
     template<typename T>
-    inline Vec3<T> bary3D(Vec3<T> pos, Vec4<T> p1, Vec4<T> p2, Vec4<T> p3, Vec3<T> normal) {
+    inline Vec3<T> bary3D(Vec4<T> pos, Vec4<T> p1, Vec4<T> p2, Vec4<T> p3, Vec3<T> normal) {
         return bary3D(pos, Vec3<T>(p1), Vec3<T>(p2), Vec3<T>(p3), normal);
     }
 
@@ -94,7 +94,7 @@ namespace potato {
         return A*bary.x + B*bary.y + C*bary.z;
     };
 
-    // Regularly adds/ignors values along each axis depending on the bary value
+    // Regularly adds/ignores values along each axis depending on the bary value
     // Uses like "gridlines" to see the shape of value distribution and see if laws of perspective are being obeyed
     template<typename T, typename V>
     inline V interpolateBaryGrid(Vec3<T> bary, V A, V B, V C) {
