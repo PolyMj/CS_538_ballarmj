@@ -82,6 +82,12 @@ target_link_libraries(PotatoRenderApp ${ALL_LIBRARIES})
 install(TARGETS PotatoRenderApp RUNTIME DESTINATION bin/PotatoRenderApp)
 install(DIRECTORY shaders/PotatoRenderApp DESTINATION bin/PotatoRenderApp/shaders)
 
+# Temporary test program
+add_executable(TestApp ${GENERAL_SOURCES} "./src/app/TestApp.cpp")
+target_link_libraries(TestApp ${ALL_LIBRARIES})
+install(TARGETS TestApp RUNTIME DESTINATION bin/TestApp)
+install(DIRECTORY shaders/TestApp DESTINATION bin/TestApp/shaders)
+
 #####################################
 # TEST TARGETS
 #####################################

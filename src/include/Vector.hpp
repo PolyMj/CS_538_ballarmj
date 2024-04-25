@@ -28,6 +28,7 @@ namespace potato {
         union { T w{}, a, q; }; 
  
         Vec4() = default; 
+        Vec4(T a): x(a), y(a), z(a), w(a) {};
         Vec4(T x, T y, T z, T w): x(x), y(y), z(z), w(w) {}; 
         Vec4(Vec3<T> v, T w): x(v.x), y(v.y), z(v.z), w(w) {}; 
  
@@ -177,6 +178,7 @@ namespace potato {
         union { T z{}, b, p; }; 
  
         Vec3() = default; 
+        Vec3(T a): x(a), y(a), z(a) {};
         Vec3(T x, T y, T z): x(x), y(y), z(z) {}; 
  
         template<typename U> 
@@ -334,6 +336,19 @@ namespace potato {
                 z / len 
             }; 
         }; 
+
+        template<typename U>
+        auto mix(Vec3<U> other, double second_weight) -> Vec3<decltype(T{} * U{})> {
+            using H = decltype(T{} * U{});
+            
+            double first_weight = 1.0-second_weight;
+            
+            return {
+                ((H)(x*first_weight) + (H)(other.x*second_weight)),
+                ((H)(y*first_weight) + (H)(other.y*second_weight)),
+                ((H)(z*first_weight) + (H)(other.z*second_weight))
+            };
+        }
     }; 
  
     using Vec3f = Vec3<float>; 
@@ -383,4 +398,10 @@ namespace potato {
         vi.z = (int)std::round(v.z); 
         return vi; 
     }; 
+
+        
+    inline void printV3(Vec3f v, bool endline = true) {
+        // cout << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+        // if (endline) cout << endl;
+    };
 }; 

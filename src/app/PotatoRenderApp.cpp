@@ -15,6 +15,7 @@
 #include "PotatoRenderEngine.hpp" 
 #include "PotatoForwardEngine.hpp" 
 #include "PotatoExampleEngine.hpp" 
+#include "PotatoRaytracerEngine.hpp"
  
 using namespace std; 
 using namespace tinyxml2; 
@@ -238,6 +239,9 @@ int main(int argc, char **argv) {
 	else if(RENDERER_CHOICE == FORWARD_RENDERER) { 
     	engine = new PotatoForwardEngine(windowWidth, windowHeight); 
 	} 
+	else if(RENDERER_CHOICE == RAYTRACING_RENDERER) {
+		engine = new PotatoRaytracerEngine(windowWidth, windowHeight);
+	}
 	else { 
 		throw std::invalid_argument("Bad renderer choice!"); 
 	} 

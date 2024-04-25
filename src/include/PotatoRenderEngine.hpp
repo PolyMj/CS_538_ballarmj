@@ -35,7 +35,10 @@ class PotatoRenderEngine {
         thread *drawThread = 0; 
         bool drawThreadRunning = false; 
         mutex frontBufferMutex; 
-        bool USE_VSYNC = true; 
+        // From SETTINGS.hpp
+        bool USE_VSYNC = VSYNC; 
+        bool USE_DOUBLE_BUFFERING = DOUBLE_BUFFERING;
+        bool CLEAR_DRAW_BUFFER = CLEAR_DRAW_BUFFER_PER_FRAME;
  
         // Timing stuff 
         Timekeeper timekeeper; 
@@ -52,7 +55,7 @@ class PotatoRenderEngine {
         // Stop thread 
         void shutdown(); 
         // Copies display buffer to window texture 
-        void renderToWindowTexture(); 
+        virtual void renderToWindowTexture(); 
  
         // METHODS TO OVERRIDE 
         virtual void renderToDrawBuffer(Image<Vec3f> *drawBuffer); 

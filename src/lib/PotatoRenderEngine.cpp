@@ -80,16 +80,22 @@ void PotatoRenderEngine::drawingLoop() {
         timekeeper.startFrame(); 
  
         // Set drawing buffer 
-        Image<Vec3f> *drawBuffer = backBuffer; 
+        Image<Vec3f> *drawBuffer;
+        if (this->USE_DOUBLE_BUFFERING)
+            drawBuffer = backBuffer; 
+        else
+            drawBuffer = frontBuffer;
  
         // Clear drawing buffer 
-        drawBuffer->clear(); //(Vec3f(0,0,0)); 
+        if (this->CLEAR_DRAW_BUFFER)
+            drawBuffer->clear(); //(Vec3f(0,0,0)); 
  
         // Draw our items 
         renderToDrawBuffer(drawBuffer); 
  
         // Swap buffers 
-        swapBuffers(); 
+        if (this->USE_DOUBLE_BUFFERING)
+            swapBuffers(); 
  
         // Get wait time 
         double waitTime = timekeeper.endFrame(); 
