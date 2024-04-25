@@ -36,8 +36,8 @@ namespace potato {
 			ray_y *= scale;
 			
 			// Rays will start from a position on the near plane
-			// Must be NEGATIVE of NEAR_PLANE since camera is facing in negative Z
-			direction = Vec3d(ray_x, ray_y, -NEAR_PLANE);
+			// Must be NEGATIVE of NEAR_PLANE and ray_x since camera is facing in negative Z
+			direction = Vec3d(-ray_x, ray_y, -NEAR_PLANE);
 			start = direction;
 			direction = direction.normalize();
 		};
@@ -95,12 +95,15 @@ namespace potato {
 			return (point-start).dot(normal) / vdn;
 		};
 
+
+		// Check for each intersection the ray may have with a bounding box
 		bool intersectsBBox(BoundBoxd bb, double &t1, double &t2) {
 			// For each side:
-				// Get intersection point
-					// t = distance / direction.axis {direction.axis != 0}
-					// Intersection = direction * t {t >= 0}
-				// If within bounds of side: return true
+				// Get intersection distance, check if negative
+					// Get intersection point, check if within side's bounds
+			// Assign first found collision to t1, next to t2, then return
+				// If t2 is never found, t2 = -1
+				// If t1 is never found, return false, set t1 = -1, t2 = -1
 
 			Vec3d intersect;
 			double t;

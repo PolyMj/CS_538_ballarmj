@@ -8,57 +8,48 @@
 
 #define DEG_90 (90.0*3.14/180.0)
 
-// Load models
+// Load models and place them into meshes
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
+	// Create and clear uncertainty buffer
 	uncertaintyBuffer = new Image<double>(windowWidth, windowHeight);
 	uncertaintyBuffer->clear(0.0);
 	
-	Mat4d foxMat = rotateMat<double>(DEG_90, -DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
+	Mat4d foxMat = rotateMat<double>(-DEG_90, DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
+	Mat4d vaseMat = translate(0.0, -1.0, 0.0) * uniformScale<double>(1.0/40);
 
-	Mat4d modelMat = translate(2.4, -2.0, -20.0) * uniformScale(2.0) * foxMat;
-	PolyMeshd *tp1 = new PolyMeshd();
-	tp1 = loadOBJTriangleMesh("sampleModels/fox.obj");
-	tp1->blendNormals = false;
-	tp1->transform(modelMat);
-	tp1->uniformRecolor(Vec3d(1.0, 0.5, 0.4));
-	tp1->uniformRetexture(0.8, 0.2);
-	meshes.push_back(tp1);
 
-	modelMat = translate<double>(-7.8, -1.5, 4.0) * uniformScale(2.0) * foxMat;
-	PolyMeshd *tp2 = new PolyMeshd();
-	tp2 = loadOBJTriangleMesh("sampleModels/fox.obj");
-	tp2->blendNormals = false;
-	tp2->transform(modelMat);
-	tp2->uniformRecolor(Vec3d(0.3, 1.0, 0.3));
-	tp2->uniformRetexture(1.0, 0.1);
-	meshes.push_back(tp2);
+	Mat4d modelMat = translate(0.0, -1.0, 0.0) * scale(1000.0, 0.1, 1000.0);
+	PolyMeshd *floor = loadOBJTriangleMesh("sampleModels/cube.obj");
+	floor->blendNormals = false;
+	floor->uniformRecolor(Vec3d(0.8, 1.0, 0.9));
+	floor->uniformRetexture(0.3, 0.4);
+	floor->transform(modelMat);
+	meshes.push_back(floor);
 
-	modelMat = translate<double>(2.1, -0.4, -3.6) * uniformScale(0.8);
-	PolyMeshd *c1 = new PolyMeshd();
-	c1 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	c1->blendNormals = false;
-	c1->transform(modelMat);
-	c1->uniformRecolor(Vec3d(1.0, 1.0, 0.4));
-	c1->uniformRetexture(1.0, 0.2);
-	meshes.push_back(c1);
 
-	modelMat =  translate<double>(-3.0, -1.0, -8) * scale<double>(1.6, 1.6, 4.0);
-	PolyMeshd *m1 = new PolyMeshd();
-	m1 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	m1->blendNormals = false;
-	m1->transform(modelMat);
-	m1->uniformRecolor(Vec3d(0.7, 0.7, 1.0));
-	m1->uniformRetexture(1.0, 0.0);
-	meshes.push_back(m1);
+	modelMat = translate(0.0, 0.0, -3.0) * foxMat;
+	PolyMeshd *fox = loadOBJTriangleMesh("sampleModels/fox.obj");
+	fox->blendNormals = false;
+	fox->uniformRecolor(Vec3d(1.0, 0.6, 0.1));
+	fox->uniformRetexture(0.9, 0.1);
+	fox->transform(modelMat);
+	meshes.push_back(fox);
 
-	modelMat =  translate<double>(-3.0, -1.0, -28) * scale<double>(15, 15, 0.1);
-	PolyMeshd *m2 = new PolyMeshd();
-	m2 = loadOBJTriangleMesh("sampleModels/cube.obj");
-	m2->blendNormals = false;
-	m2->transform(modelMat);
-	m2->uniformRecolor(Vec3d(1.0, 0.85, 0.7));
-	m2->uniformRetexture(1.0, 0.05);
-	meshes.push_back(m2);
+	modelMat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, 1.2, 0.0) * scale(10.0, 10.0, 0.1);
+	PolyMeshd *wall1 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	wall1->blendNormals = false;
+	wall1->uniformRecolor(Vec3d(0.9, 1.0, 1.0));
+	wall1->uniformRetexture(1.0, 0.0);
+	wall1->transform(modelMat);
+	meshes.push_back(wall1);
+
+	modelMat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, -1.2, 0.0) * scale(10.0, 10.0, 0.1);
+	PolyMeshd *wall2 = loadOBJTriangleMesh("sampleModels/cube.obj");
+	wall2->blendNormals = false;
+	wall2->uniformRecolor(Vec3d(1.0, 1.0, 0.9));
+	wall2->uniformRetexture(1.0, 0.2);
+	wall2->transform(modelMat);
+	meshes.push_back(wall2);
 }
 
 // Delete/clear all data
@@ -68,49 +59,47 @@ PotatoRaytracerEngine::~PotatoRaytracerEngine() {
     } 
     allMeshes.clear(); 
     renderMeshes.clear();
+	meshes.clear();
  
     allFragments.clear(); 
 
-}
-
-void PotatoRaytracerEngine::processAllGeomtry() {
-	// Get view transformation matrix using cameraPos and cameraLookat
-		// Might not even be necessary
-	// For each mesh
-		// processGeometryOneMesh()
-	
-}
-
-void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat) {
-	// Look at PotatoForwardEngine.cpp
-		// Will be similar, but modifcation will be needed
+	uncertaintyBuffer->clear();
+	delete uncertaintyBuffer;
 }
 
 // Draw everything to draw buffer; called once per drawing loop iteration
 void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	buffer_passes++;
+	// For each x,y
 	for (int x = 0; x < windowWidth; x++) {
 		for (int y = 0; y < windowHeight; y++) {
+			// If using the uncertainty buffer to perform more raycasts in less certain areas
 			if (USE_UNCERTAINTY) {
+				// Get the uncertainty and round it to an int, then add 1
 				int uncertainty = (int)(uncertaintyBuffer->getPixel(x,y)*UNCERTAINTY_SCALE)+1;
 				double new_uncertainty = 0.0;
 				Vec3d color = {};
+				// Greater uncertainty ==> More raycasts
 				for (int i = 0; i < uncertainty; i++) {
-					double temp_uc;
+					double temp_uc; // Partial uncertainty passed by reference to next raycast
 					Ray ray = Ray(windowWidth, windowHeight, x, y);
-					color = color.mix(raycast(ray, temp_uc), 1.0/(double)(i+1));
-					new_uncertainty += temp_uc / (uncertainty);
+					color = color.mix(raycast(ray, temp_uc), 1.0/(double)(i+1)); // Blend the colors from each raycost into color
+					new_uncertainty += temp_uc / (uncertainty); // Add partial uncertainty to the new total for the pixel
 				}
+				// For debugging the uncertainty buffer
 				if (UNCERTAINTY_DEBUG)
 					drawBuffer->setPixel(x,y, Vec3f((new_uncertainty/(new_uncertainty+UNCERTAINTY_SCALE))));
 				else  {
-					double mix = 1.0 - 1.0/(double)buffer_passes;
+					// Calcuate the weight that the new color will have based on the number of raycasts
+					double weight = 1.0 - 1.0/(double)buffer_passes;
 					for (int i = 1; i < uncertainty; i++) 
-						mix *= mix;
-					drawBuffer->setPixel(x,y,drawBuffer->getPixel(x,y).mix(color, 1.0-mix));
+						weight *= weight;
+					drawBuffer->setPixel(x,y,drawBuffer->getPixel(x,y).mix(color, 1.0-weight));
 				}
-				uncertaintyBuffer->setPixel(x,y,new_uncertainty);
+				// Update the uncertainty buffer
+				uncertaintyBuffer->setPixel(x,y, max(new_uncertainty, uncertaintyBuffer->getPixel(x,y)));
 			}
+			// If not using uncertainty, just do a single raycast and merge it with the current color in drawBuffer
 			else {
 				Ray ray = Ray(windowWidth, windowHeight, x, y);
 				double temp;
@@ -120,15 +109,19 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	}
 }
 
+// Casts a ray from the camera and returns the final color for the pixel
 Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty) {
+	// Holds information about collisions
 	Vertd col_vert;
-	col_vert.roughness = 0.0;
-	uncertainty = 0.0;
+	col_vert.roughness = 0.0; // Default roughness
+	uncertainty = 0.0; // Default uncertainty
+
+	// Bounce a ray a certain number of times, or until it stops hitting anything
 	for (int i = 0; i < MAX_BOUNCES; i++) {
-		double disatnce;
+		double disatnce; // Pass into collideRay to get the distance traveled for the collision
 		double uncertainty_factor = col_vert.roughness * ray.specular.length();
 		if (collideRay(ray, col_vert, disatnce)) {
-			uncertainty += uncertainty_factor * disatnce;
+			// Get the diffuse scalar based on the diffuse color, normal direciton, and light direction
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
 			
 			// Reflect the ray
@@ -136,8 +129,12 @@ Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty) {
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), Vec3d(randDouble(), randDouble(), randDouble()));
 			else
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar));
+			
+			// Add uncertainty from this ray collision
+			uncertainty += uncertainty_factor * disatnce;
 		}
 		else {
+			// Add uncertainty for a ray hitting a surface and missing all objects
 			uncertainty += uncertainty_factor * MISS_DISTANCE;
 			break;
 		}

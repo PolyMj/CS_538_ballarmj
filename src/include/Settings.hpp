@@ -3,7 +3,7 @@
 // Comment to turn off testing 
 #define ENABLE_TESTING 
 
-#define BASICALLY_ZERO 0.0001
+#define BASICALLY_ZERO 0.000001
  
 // Set target FPS 
 #define TARGET_FPS      60 
@@ -44,13 +44,12 @@
 #define VIEW_HEIGHT NEAR_PLANE*1.3
 
 #define RANDOMNESS 1.0
-#define ENABLE_RANDOM true
-#define USE_UNCERTAINTY true
-#define UNCERTAINTY_SCALE 2.0
-#define MISS_DISTANCE 5.0
+#define ENABLE_RANDOM false
+#define USE_UNCERTAINTY false
+#define UNCERTAINTY_SCALE 5.0
+#define MISS_DISTANCE 2.0
 
 #define VSYNC false
 #define DOUBLE_BUFFERING false
 #define CLEAR_DRAW_BUFFER_PER_FRAME false
-#define AVERAGE_FRAMES true
 #define UNCERTAINTY_DEBUG false

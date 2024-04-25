@@ -148,24 +148,24 @@ namespace potato {
     template<typename T>
     inline Mat4<T> rotateMat(T x, T y, T z) {
         Mat4<T> xRot = {
-            1,      0,       0, 0,
-            0, cos(x), -sin(x), 0,
-            0, sin(x),  cos(x), 0,
-            0,      0,       0, 1
+            1,       0,       0, 0,
+            0,  cos(x),  sin(x), 0,
+            0, -sin(x),  cos(x), 0,
+            0,       0,       0, 1
         };
 
         Mat4<T> yRot = {
-             cos(y), 0, sin(y), 0,
-            0      , 1,      0, 0,
-            -sin(y), 0, cos(y), 0,
-                  0, 0,      0, 1
+             cos(y), 0, -sin(y), 0,
+            0      , 1,       0, 0,
+             sin(y), 0,  cos(y), 0,
+                  0, 0,       0, 1
         };
 
         Mat4<T> zRot = {
-            cos(z), -sin(z),  0, 0,
-            sin(z),  cos(z),  0, 0,
-                 0,       0,  1, 0,
-                 0,       0,  0, 1
+             cos(z),  sin(z),  0, 0,
+            -sin(z),  cos(z),  0, 0,
+                  0,       0,  1, 0,
+                  0,       0,  0, 1
         };
 
         return zRot * yRot * xRot;

@@ -33,9 +33,6 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
 
         int buffer_passes = 0;
 
-        void PotatoRaytracerEngine::processAllGeomtry();
-        void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
-
         Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty);
         bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert, double &distance);
  
