@@ -24,7 +24,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         Vec3d lightDirection = Vec3d(0.3, 1.0, 0.7).normalize();
 
         vector<PolyMeshd*> meshes;
-        Image<double> *certaintyBuffer;
+        Image<double> *uncertaintyBuffer;
         
         // Random number stuff
         mt19937 gen = mt19937(std::random_device{}());
@@ -36,8 +36,8 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         void PotatoRaytracerEngine::processAllGeomtry();
         void PotatoRaytracerEngine::processGeomtryOneMesh(Mat4f modelMat, Mat4f viewMat);
 
-        Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &certainty);
-        bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert);
+        Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty);
+        bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert, double &distance);
  
     public: 
         PotatoRaytracerEngine(int windowWidth, int windowHeight); 

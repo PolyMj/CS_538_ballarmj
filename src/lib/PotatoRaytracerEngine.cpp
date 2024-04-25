@@ -10,8 +10,8 @@
 
 // Load models
 PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) : PotatoRenderEngine(windowWidth, windowHeight) {
-	certaintyBuffer = new Image<double>(windowWidth, windowHeight);
-	certaintyBuffer->clear(0.0);
+	uncertaintyBuffer = new Image<double>(windowWidth, windowHeight);
+	uncertaintyBuffer->clear(0.0);
 	
 	Mat4d foxMat = rotateMat<double>(DEG_90, -DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
 
@@ -91,17 +91,25 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	buffer_passes++;
 	for (int x = 0; x < windowWidth; x++) {
 		for (int y = 0; y < windowHeight; y++) {
-			int certainty = certaintyBuffer->getPixel(x,y);
-			double new_certainty = 0;
 			if (USE_UNCERTAINTY) {
-				for (int i = 0; i <= certainty; i++) {
-					double temp;
+				int uncertainty = (int)(uncertaintyBuffer->getPixel(x,y)*UNCERTAINTY_SCALE)+1;
+				double new_uncertainty = 0.0;
+				Vec3d color = {};
+				for (int i = 0; i < uncertainty; i++) {
+					double temp_uc;
 					Ray ray = Ray(windowWidth, windowHeight, x, y);
-					Vec3d color = raycast(ray, temp);
-					drawBuffer->setPixel(x, y, Vec3f(drawBuffer->getPixel(x,y)).mix(color, 1.0f/(float)buffer_passes));
-					new_certainty += temp;
+					color = color.mix(raycast(ray, temp_uc), 1.0/(double)(i+1));
+					new_uncertainty += temp_uc / (uncertainty);
 				}
-				certaintyBuffer->setPixel(x,y,new_certainty*10.0);
+				if (UNCERTAINTY_DEBUG)
+					drawBuffer->setPixel(x,y, Vec3f((new_uncertainty/(new_uncertainty+UNCERTAINTY_SCALE))));
+				else  {
+					double mix = 1.0 - 1.0/(double)buffer_passes;
+					for (int i = 1; i < uncertainty; i++) 
+						mix *= mix;
+					drawBuffer->setPixel(x,y,drawBuffer->getPixel(x,y).mix(color, 1.0-mix));
+				}
+				uncertaintyBuffer->setPixel(x,y,new_uncertainty);
 			}
 			else {
 				Ray ray = Ray(windowWidth, windowHeight, x, y);
@@ -112,19 +120,25 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 	}
 }
 
-Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &certainty) {
+Vec3f PotatoRaytracerEngine::raycast(Ray ray, double &uncertainty) {
 	Vertd col_vert;
-	certainty = 0;
+	col_vert.roughness = 0.0;
+	uncertainty = 0.0;
 	for (int i = 0; i < MAX_BOUNCES; i++) {
-		if (collideRay(ray, col_vert)) {
-			certainty += col_vert.roughness * ray.specular.length();
+		double disatnce;
+		double uncertainty_factor = col_vert.roughness * ray.specular.length();
+		if (collideRay(ray, col_vert, disatnce)) {
+			uncertainty += uncertainty_factor * disatnce;
 			double diffuse_scalar = (1.0 + MIN_SKY_LIGHT + col_vert.normal.dot(lightDirection)) / (2.0 + 2*MIN_SKY_LIGHT);
+			
+			// Reflect the ray
 			if (ENABLE_RANDOM)
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar), Vec3d(randDouble(), randDouble(), randDouble()));
 			else
 				ray.reflectSelf(col_vert, Vec3d(diffuse_scalar));
 		}
 		else {
+			uncertainty += uncertainty_factor * MISS_DISTANCE;
 			break;
 		}
 	}
@@ -142,7 +156,7 @@ struct BBCollideData {
 };
 
 // Returns the color from the given raycast
-bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
+bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert, double &distance) {
 	
 	// List of collisions with bounding boxes
 	vector<BBCollideData> bb_collides = {};
@@ -249,6 +263,7 @@ bool PotatoRaytracerEngine::collideRay(Ray ray, Vertd &col_vert) {
 
 	// Put the new collision vert into the reference variable
 	col_vert = closest_cld_vert;
+	distance = closest_cld_t;
 	// Return whether or not a collision was found
 	return hasBeenACollide;
 }

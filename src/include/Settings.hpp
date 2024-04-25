@@ -45,9 +45,12 @@
 
 #define RANDOMNESS 1.0
 #define ENABLE_RANDOM true
-#define AVERAGE_FRAMES true
 #define USE_UNCERTAINTY true
+#define UNCERTAINTY_SCALE 2.0
+#define MISS_DISTANCE 5.0
 
 #define VSYNC false
 #define DOUBLE_BUFFERING false
 #define CLEAR_DRAW_BUFFER_PER_FRAME false
+#define AVERAGE_FRAMES true
+#define UNCERTAINTY_DEBUG false
