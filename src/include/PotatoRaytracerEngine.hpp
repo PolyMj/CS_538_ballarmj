@@ -28,7 +28,7 @@ class PotatoRaytracerEngine : public PotatoRenderEngine {
         
         // Random number stuff
         mt19937 gen = mt19937(std::random_device{}());
-        uniform_real<double> dis = uniform_real<double>(0, RANDOMNESS);
+        uniform_real<double> dis = uniform_real<double>(0, 1.0);
         inline double randDouble() { return dis(gen); };
 
         int buffer_passes = 0;

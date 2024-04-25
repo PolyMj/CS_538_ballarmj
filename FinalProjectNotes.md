@@ -64,3 +64,5 @@
 ### [Chris Trailie on YouTube - Ray Intersect Triangle](https://youtu.be/zAhBA42n1eg?si=_6uAikKcf_m9IKqD)
  - Use intersection with plane to get t ==> (p) point of intersection between ray and plane
  - Use barycentric(p) to check if p is in the triangle
+
+[Presentation Slideshow](https://docs.google.com/presentation/d/1WAZqgpBL-bHTMWWIvqXw8FJVeRP7MtF2Y6w5DnyOvkc/edit?usp=drive_link)
