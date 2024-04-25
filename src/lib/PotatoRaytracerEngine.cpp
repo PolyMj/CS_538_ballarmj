@@ -101,6 +101,9 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 					Ray ray = Ray(windowWidth, windowHeight, x, y);
 					color = raycast(ray, new_uncertainty);
 				}
+				
+				// Update the uncertainty buffer
+				uncertaintyBuffer->setPixel(x,y, max(new_uncertainty, uncertaintyBuffer->getPixel(x,y)));
 
 				// Set the color of the pixel
 				if (UNCERTAINTY_DEBUG)
@@ -112,9 +115,6 @@ void PotatoRaytracerEngine::renderToDrawBuffer(Image<Vec3f> * drawBuffer) {
 						weight *= weight;
 					drawBuffer->setPixel(x,y,drawBuffer->getPixel(x,y).mix(color, 1.0-weight));
 				}
-
-				// Update the uncertainty buffer
-				uncertaintyBuffer->setPixel(x,y, max(new_uncertainty, uncertaintyBuffer->getPixel(x,y)));
 			}
 
 			// If not using uncertainty, just do a single raycast and merge it with the current color in drawBuffer
