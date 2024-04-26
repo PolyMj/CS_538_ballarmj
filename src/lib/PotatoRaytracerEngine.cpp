@@ -14,44 +14,44 @@ PotatoRaytracerEngine::PotatoRaytracerEngine(int windowWidth, int windowHeight) 
 	uncertaintyBuffer = new Image<double>(windowWidth, windowHeight);
 	uncertaintyBuffer->clear(0.0);
 	
-	//// Everything after this is just loading and placing models ////
+	//// LOAD MODELS ////
 
 	Mat4d foxMat = rotateMat<double>(-DEG_90, DEG_90, 0) * translate(-1.0, -1.0, -1.0) * uniformScale(1.0/100.0);
 	Mat4d vaseMat = translate(0.0, -1.0, 0.0) * uniformScale<double>(1.0/60);
 
-	Mat4d modelMat = translate(0.0, -1.0, 0.0) * scale(1000.0, 0.1, 1000.0);
+	Mat4d flrMat = translate(0.0, -1.0, 0.0) * scale(1000.0, 0.1, 1000.0);
 	PolyMeshd *floor = loadOBJTriangleMesh("sampleModels/cube.obj");
 	floor->blendNormals = false;
 	floor->uniformRecolor(Vec3d(1.0, 1.0, 1.0));
 	floor->uniformRetexture(0.25, 0.4);
-	floor->transform(modelMat);
+	floor->transform(flrMat);
 	meshes.push_back(floor);
 
 
-	modelMat = translate(0.0, 0.2, -3.0) * vaseMat;
+	Mat4d fox1Mat = translate(0.0, 0.2, -3.0) * vaseMat;
 	PolyMeshd *fox = loadOBJTriangleMesh("sampleModels/vase.obj");
 	fox->blendNormals = false;
 	fox->uniformRecolor(Vec3d(1.0, 0.6, 0.1));
 	fox->uniformRetexture(0.8, 0.1);
-	fox->transform(modelMat);
+	fox->transform(fox1Mat);
 	meshes.push_back(fox);
 
-	modelMat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, 1.2, 0.0) * scale(10.0, 10.0, 0.1);
+	Mat4d wall1Mat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, 1.2, 0.0) * scale(10.0, 10.0, 0.1);
 	PolyMeshd *wall1 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	wall1->blendNormals = false;
 	wall1->uniformRecolor(Vec3d(0.8, 0.9, 1.0));
 	wall1->uniformRetexture(1.0, 0.0);
-	wall1->transform(modelMat);
+	wall1->transform(wall1Mat);
 	meshes.push_back(wall1);
 
-	modelMat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, -1.2, 0.0) * scale(10.0, 10.0, 0.1);
+	Mat4d wall2Mat = translate(0.0, 1.0, -7.0) * rotateMat(0.0, -1.2, 0.0) * scale(10.0, 10.0, 0.1);
 	PolyMeshd *wall2 = loadOBJTriangleMesh("sampleModels/cube.obj");
 	wall2->blendNormals = false;
 	wall2->uniformRecolor(Vec3d(1.0, 1.0, 0.7));
 	wall2->uniformRetexture(1.0, 0.25);
-	wall2->transform(modelMat);
+	wall2->transform(wall2Mat);
 	meshes.push_back(wall2);
-	//// Done loading models ////
+	//// DONE LOADING MODELS ////
 }
 
 // Delete/clear all data
