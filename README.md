@@ -109,3 +109,4 @@ If you want to disable a model that's already there, comment out the line conati
 
 ### [MaddesJG (on Thingiverse) - SlimeVR Case \"Hexaeder\"](https://www.thingiverse.com/thing:5140456)
  - Nearly perfect model for SlimeVR trackers, although the design of the rear-port for the female JST 5-pin connector means that disassembly requires descruction of the case or desoldering of components, which is why I redesigned it slightly. 
+ - 
